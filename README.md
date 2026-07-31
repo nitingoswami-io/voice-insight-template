@@ -89,6 +89,39 @@ observation.
 
 ---
 
+## Deploying
+
+Live at **https://lisn10.vercel.app**.
+
+The GitHub repository is connected to Vercel, so **pushing to `main` deploys to
+production** and any other branch gets a preview URL.
+
+> **Do not also run `vercel deploy --prod`.** Both paths are live, and a manual
+> deploy races the Git-triggered one for the production alias — whichever
+> finishes last wins, which makes it look as though configuration changed by
+> itself. Push, and let the integration deploy.
+
+Six environment variables, set in the Vercel dashboard rather than the repo:
+
+| Variable | Purpose |
+|---|---|
+| `ACCESS_CODE` | Unlocks `/demo` and the paid API routes |
+| `ASSEMBLYAI_API_KEY` | Transcription, language detection, diarization |
+| `XAI_API_KEY` | Analysis |
+| `BREVO_API_KEY` | Contact-form delivery |
+| `CONTACT_TO_EMAIL` | Where enquiries land |
+| `CONTACT_FROM_EMAIL` | Sender — must be verified in Brevo |
+
+Changing one takes effect on the next deployment, not immediately. To rotate a
+value, prefer `vercel env rm <NAME> production` followed by `vercel env add`:
+`--force` on an existing variable has not been reliable here.
+
+Per-deployment URLs (`lisn10-<hash>-…vercel.app`) sit behind Vercel's own
+deployment protection and return 401 to anyone outside the team. Share the
+`lisn10.vercel.app` alias, never a deployment URL.
+
+---
+
 ## Tests
 
 `src/lib/verify.test.ts` asserts that a fabricated quote, a real quote at a
