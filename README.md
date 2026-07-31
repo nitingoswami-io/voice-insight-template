@@ -1,11 +1,12 @@
-# Call Quality — prototype
+# Lisn10 — prototype
 
 Upload a support call recording. Get a transcript with speakers separated and a
 short read of the call — what the customer wanted, what went well, what to coach
 — where **every observation carries the quote that backs it**. Click a quote and
 the audio jumps to it.
 
-One page. Two API keys. No database, no storage bucket, nothing to provision.
+No database, no storage bucket, nothing to provision. A landing page at `/`, the
+analyser at `/demo` behind an access code, and a contact form at `/contact`.
 
 ---
 
@@ -13,19 +14,22 @@ One page. Two API keys. No database, no storage bucket, nothing to provision.
 
 ```bash
 npm install
-cp .env.example .env.local     # add two keys
+cp .env.example .env.local     # fill in the keys
 npm run dev
 ```
 
-Keys: [AssemblyAI](https://www.assemblyai.com/dashboard) (transcription) and
-[xAI](https://console.x.ai) (analysis). Both have free credit.
-
-Deploy: push to Vercel, set the same two env vars. That's it.
+Two keys are needed for the pipeline: [AssemblyAI](https://www.assemblyai.com/dashboard)
+(transcription) and [xAI](https://console.x.ai) (analysis). Both have free
+credit. `BREVO_API_KEY` is only needed if you want the contact form to deliver,
+and `ACCESS_CODE` is optional locally — see *Deploying* below.
 
 ```bash
-npm test        # 32 tests, no network or credentials needed
+npm test        # 124 tests, no network or credentials needed
 npm run build
 ```
+
+The demo has been run end to end against the live APIs; the timings and costs
+quoted here come from real runs, not estimates.
 
 ---
 
@@ -145,8 +149,16 @@ one must yield only the grounded one.
   design.
 - **Speaker roles are a guess.** Diarization returns A/B, not agent/customer; the
   first speaker is assumed to be the agent.
-- **No auth, no multi-tenancy, no history.** It is a prototype.
-- **Never run end-to-end against live APIs in this build.** The pipeline is
-  covered by tests with the model mocked, and every error path was exercised,
-  but no real recording has been through it.
-- Roughly $0.05 for a 10-minute call (~$0.03 transcription + ~$0.02 analysis).
+- **One shared access code, no user accounts.** Enough to keep a demo link from
+  becoming an open, billable endpoint; not an authentication system. There is no
+  rate limit on unlock attempts either — a long random code is what makes brute
+  force impractical.
+- **No multi-tenancy, no history.** Results live in the browser session only.
+- **Model output varies between runs.** The same recording scored 78 and then 85
+  on consecutive runs at temperature 0. Every quote verified both times, but
+  expect the wording of coaching points to move.
+- **Speaker roles are a guess**, and diarization occasionally misplaces a phrase
+  at a turn boundary. `multichannel` removes both problems where the telephony
+  platform records the two legs separately.
+- Roughly $0.05 for a 10-minute call (~$0.03 transcription + ~$0.02 analysis),
+  and about 50 seconds end to end.
