@@ -15,6 +15,7 @@ import { CallTimeline } from "@/components/charts/call-timeline";
 import { TalkShare } from "@/components/charts/talk-share";
 import { HeroScore, Meter, Stat } from "@/components/charts/stat";
 import { CategoryScores } from "@/components/charts/category-scores";
+import { LockButton } from "@/components/lock-button";
 import {
   formatDuration,
   formatPercent,
@@ -236,12 +237,15 @@ export function Analyzer() {
 
   return (
     <div className="space-y-6 py-10">
-      <header>
-        <h1 className="text-2xl font-medium tracking-tight">Analyse a call</h1>
-        <p className="mt-2 max-w-xl text-[15px] leading-relaxed text-[var(--muted)]">
-          Upload a recording. Every observation comes back with the quote that
-          backs it — click one to hear it.
-        </p>
+      <header className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-medium tracking-tight">Analyse a call</h1>
+          <p className="mt-2 max-w-xl text-[15px] leading-relaxed text-[var(--muted)]">
+            Upload a recording. Every observation comes back with the quote that
+            backs it — click one to hear it.
+          </p>
+        </div>
+        <LockButton />
       </header>
 
       <Panel>
