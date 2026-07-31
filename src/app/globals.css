@@ -1,26 +1,113 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+ * Near-monochrome by intent. The only saturated colour in the product marks a
+ * verdict or an interaction, so when something is coloured it means something.
+ * Nothing here decorates.
+ */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root {
+  --background: #fbfbfa;
+  --surface: #ffffff;
+  --border: #e6e4e0;
+  --border-strong: #d4d1cc;
+  --foreground: #1a1a19;
+  --muted: #6b6a66;
+  --subtle: #92908b;
+
+  --accent: #3d5a80;
+  --accent-soft: #eef2f7;
+
+  --met: #2f6d4f;
+  --met-soft: #eef5f1;
+  --not-met: #9a3b32;
+  --not-met-soft: #faf0ef;
+  --caution: #8a6410;
+  --caution-soft: #fbf5e8;
+
+  --highlight: #fdf3d0;
+
+  /* Chart roles. Categorical slots 1 and 2 of the validated palette — blue and
+     orange. Validated against this app's own surfaces: all six checks pass in
+     both modes, worst adjacent CVD ΔE 24.7 light / 26.8 dark (target ≥ 8). */
+  --series-agent: #2a78d6;
+  --series-customer: #eb6834;
+  --chart-grid: #e1e0d9;
+  --chart-axis: #c3c2b7;
+  --chart-track: #f0efec;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #101011;
+    --surface: #17171a;
+    --border: #27272b;
+    --border-strong: #35353a;
+    --foreground: #e9e8e6;
+    --muted: #9b9a96;
+    --subtle: #78776f;
+
+    --accent: #8fb0d3;
+    --accent-soft: #1b2733;
+
+    --met: #7fc0a0;
+    --met-soft: #16241d;
+    --not-met: #e09a92;
+    --not-met-soft: #2a1a18;
+    --caution: #d6b46a;
+    --caution-soft: #262015;
+
+    --highlight: #3a3320;
+
+    /* Same two hues, stepped for the dark surface — not an automatic flip. */
+    --series-agent: #3987e5;
+    --series-customer: #d95926;
+    --chart-grid: #2c2c2a;
+    --chart-axis: #383835;
+    --chart-track: #232326;
   }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-met: var(--met);
+  --color-met-soft: var(--met-soft);
+  --color-not-met: var(--not-met);
+  --color-not-met-soft: var(--not-met-soft);
+  --color-caution: var(--caution);
+  --color-caution-soft: var(--caution-soft);
+  --color-highlight: var(--highlight);
+  --color-series-agent: var(--series-agent);
+  --color-series-customer: var(--series-customer);
+  --color-chart-grid: var(--chart-grid);
+  --color-chart-axis: var(--chart-axis);
+  --color-chart-track: var(--chart-track);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, Menlo, monospace;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Tabular figures wherever numbers are compared down a column. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Applied to a transcript utterance when its finding is selected. */
+.evidence-active {
+  background: var(--highlight);
 }
