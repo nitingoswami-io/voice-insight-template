@@ -1,10 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+
+/** Any shape an error body might arrive in, flattened to something renderable. */
+function errorMessage(payload: unknown, fallback: string): string {
+  if (typeof payload === "string") return payload;
+  if (payload && typeof payload === "object") {
+    const e = (payload as { error?: unknown }).error;
+    if (typeof e === "string") return e;
+    // Some intermediaries (Vercel's own deployment protection, proxies) return
+    // `error` as an object. Rendering that gives React nothing to show, so the
+    // form would sit there looking broken with no explanation.
+    if (e && typeof e === "object") {
+      const m = (e as { message?: unknown }).message;
+      if (typeof m === "string") return m;
+    }
+  }
+  return fallback;
+}
 
 export function UnlockForm({ next }: { next: string }) {
-  const router = useRouter();
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -21,15 +36,26 @@ export function UnlockForm({ next }: { next: string }) {
       });
       const payload = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(payload.error ?? "That code is not right.");
+        setError(errorMessage(payload, "That code is not right."));
+        setBusy(false);
         return;
       }
-      // Full navigation, so middleware re-runs and sees the new cookie.
-      router.replace(next);
-      router.refresh();
+
+      /*
+       * A hard navigation, deliberately — not router.replace().
+       *
+       * A soft navigation resolves from Next's client Router Cache, which
+       * already holds the middleware redirect from /demo to here. It would
+       * bounce straight back and the form would appear to do nothing, with the
+       * new cookie never consulted. A full page load re-runs middleware against
+       * the cookie the browser just stored.
+       *
+       * `busy` is left set so the button cannot be pressed twice while the
+       * browser is on its way.
+       */
+      window.location.assign(next);
     } catch {
       setError("Could not reach the server. Check your connection.");
-    } finally {
       setBusy(false);
     }
   }
