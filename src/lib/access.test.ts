@@ -1,0 +1,171 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  constantTimeEqual,
+  gateActive,
+  isProtectedPath,
+  isValidCode,
+  isValidToken,
+  issueToken,
+  accessConfigured,
+  safeNext,
+} from "@/lib/access";
+
+beforeEach(() => {
+  vi.stubEnv("ACCESS_CODE", "");
+  delete process.env.ACCESS_CODE;
+});
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
+
+const setNodeEnv = (value: string) => vi.stubEnv("NODE_ENV", value);
+const setCode = (value: string) => vi.stubEnv("ACCESS_CODE", value);
+
+describe("isProtectedPath", () => {
+  it("covers the demo and every route that spends money", () => {
+    for (const p of [
+      "/demo",
+      "/demo/anything",
+      "/api/transcribe",
+      "/api/status",
+      "/api/insight",
+    ]) {
+      expect(isProtectedPath(p)).toBe(true);
+    }
+  });
+
+  it("leaves the shop window open", () => {
+    // Gating these would hide the product from the people it is meant to reach.
+    for (const p of ["/", "/contact", "/api/contact", "/unlock", "/api/access"]) {
+      expect(isProtectedPath(p)).toBe(false);
+    }
+  });
+
+  it("does not treat a lookalike prefix as protected", () => {
+    expect(isProtectedPath("/demonstration")).toBe(false);
+    expect(isProtectedPath("/api/transcribe-something-else")).toBe(false);
+  });
+});
+
+describe("gateActive", () => {
+  it("stays open in development when no code is set", () => {
+    setNodeEnv("development");
+    expect(gateActive()).toBe(false);
+  });
+
+  it("locks in production even with no code set", () => {
+    // The whole point: forgetting to configure the gate must never be the
+    // thing that publishes an unmetered, paid endpoint.
+    setNodeEnv("production");
+    expect(gateActive()).toBe(true);
+    expect(accessConfigured()).toBe(false);
+  });
+
+  it("is active in development once a code exists", () => {
+    setNodeEnv("development");
+    setCode("let-me-in-please");
+    expect(gateActive()).toBe(true);
+  });
+});
+
+describe("constantTimeEqual", () => {
+  it("matches identical strings", () => {
+    expect(constantTimeEqual("abc123", "abc123")).toBe(true);
+  });
+
+  it("rejects different strings, including different lengths", () => {
+    expect(constantTimeEqual("abc123", "abc124")).toBe(false);
+    expect(constantTimeEqual("abc", "abc123")).toBe(false);
+    expect(constantTimeEqual("", "abc")).toBe(false);
+  });
+
+  it("handles multi-byte characters without throwing", () => {
+    expect(constantTimeEqual("नमस्ते", "नमस्ते")).toBe(true);
+    expect(constantTimeEqual("नमस्ते", "வணக்கம்")).toBe(false);
+  });
+});
+
+describe("tokens", () => {
+  it("issues nothing when no code is configured", async () => {
+    expect(await issueToken()).toBeNull();
+  });
+
+  it("round-trips a token for the configured code", async () => {
+    setCode("correct-horse-battery-staple");
+    const token = await issueToken();
+    expect(token).toBeTruthy();
+    expect(await isValidToken(token)).toBe(true);
+  });
+
+  it("never leaks the code into the cookie value", async () => {
+    setCode("correct-horse-battery-staple");
+    const token = (await issueToken())!;
+    expect(token).not.toContain("correct-horse");
+  });
+
+  it("invalidates every token when the code changes", async () => {
+    setCode("first-code-value");
+    const old = await issueToken();
+    setCode("second-code-value");
+    expect(await isValidToken(old)).toBe(false);
+  });
+
+  it("rejects a missing or junk token", async () => {
+    setCode("correct-horse-battery-staple");
+    expect(await isValidToken(undefined)).toBe(false);
+    expect(await isValidToken("")).toBe(false);
+    expect(await isValidToken("not-a-real-token")).toBe(false);
+  });
+
+  it("rejects any token when the gate is unconfigured", async () => {
+    expect(await isValidToken("anything-at-all")).toBe(false);
+  });
+});
+
+describe("isValidCode", () => {
+  it("accepts the configured code and nothing else", async () => {
+    setCode("s3cret-demo-code");
+    expect(await isValidCode("s3cret-demo-code")).toBe(true);
+    expect(await isValidCode("s3cret-demo-cod")).toBe(false);
+    expect(await isValidCode("")).toBe(false);
+  });
+
+  it("refuses everything when no code is configured", async () => {
+    expect(await isValidCode("")).toBe(false);
+    expect(await isValidCode("guess")).toBe(false);
+  });
+});
+
+describe("safeNext", () => {
+  it("keeps a legitimate protected destination", () => {
+    expect(safeNext("/demo")).toBe("/demo");
+    expect(safeNext("/demo?x=1")).toBe("/demo?x=1");
+  });
+
+  it("refuses an absolute URL — this is the open-redirect guard", () => {
+    // Without this the unlock page becomes a redirector wearing our own
+    // domain, which is precisely what a convincing phishing link needs.
+    expect(safeNext("https://evil.example")).toBe("/demo");
+    expect(safeNext("http://evil.example/x")).toBe("/demo");
+  });
+
+  it("refuses a protocol-relative URL", () => {
+    expect(safeNext("//evil.example")).toBe("/demo");
+  });
+
+  it("refuses backslash and newline smuggling", () => {
+    expect(safeNext("/\\evil.example")).toBe("/demo");
+    expect(safeNext("/demo\nLocation: https://evil.example")).toBe("/demo");
+  });
+
+  it("refuses a same-origin path the gate does not protect", () => {
+    // No point bouncing someone to a public page through the unlock flow.
+    expect(safeNext("/contact")).toBe("/demo");
+    expect(safeNext("/")).toBe("/demo");
+  });
+
+  it("falls back when nothing was given", () => {
+    expect(safeNext(null)).toBe("/demo");
+    expect(safeNext("")).toBe("/demo");
+  });
+});
