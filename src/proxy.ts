@@ -1,40 +1,26 @@
 import { NextResponse, type NextRequest } from "next/server";
 import {
   ACCESS_COOKIE,
-  accessConfigured,
   gateActive,
   isProtectedPath,
   isValidToken,
 } from "@/lib/access";
 
 /**
- * One gate in front of everything that costs money.
+ * One optional gate in front of every route that calls a metered API.
  *
- * Doing this in middleware rather than per-route means a new paid endpoint is
- * covered by adding it to PROTECTED_PREFIXES, instead of by remembering to
- * repeat a check — the failure mode of per-route guards is the one you forget.
+ * Off unless `ACCESS_CODE` is set. Doing this in proxy rather than
+ * per-route means a new metered endpoint is covered by adding it to
+ * PROTECTED_PREFIXES, instead of by remembering to repeat a check — the failure
+ * mode of per-route guards is the one you forget.
  */
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
   if (!isProtectedPath(pathname)) return NextResponse.next();
   if (!gateActive()) return NextResponse.next();
 
   const isApi = pathname.startsWith("/api/");
-
-  // Locked because nobody configured a code. Say so plainly rather than
-  // showing an unlock form that no code on earth would open.
-  if (!accessConfigured()) {
-    return isApi
-      ? NextResponse.json(
-          {
-            error:
-              "This deployment is locked: ACCESS_CODE is not set. The demo stays closed rather than leaving paid endpoints open.",
-          },
-          { status: 503 },
-        )
-      : NextResponse.redirect(new URL("/unlock?reason=unconfigured", request.url));
-  }
 
   const token = request.cookies.get(ACCESS_COOKIE)?.value;
   if (await isValidToken(token)) return NextResponse.next();

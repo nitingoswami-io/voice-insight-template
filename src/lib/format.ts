@@ -32,7 +32,7 @@ export function formatDate(value: Date | string): string {
  * Display name for a detected language code.
  *
  * Falls back to the raw code rather than inventing a name — showing "Unknown"
- * or guessing would be a small lie in a product whose premise is that it does
+ * or guessing would be a small lie in a pipeline whose premise is that it does
  * not tell you things it cannot support.
  */
 export function languageName(code: string | null): string {

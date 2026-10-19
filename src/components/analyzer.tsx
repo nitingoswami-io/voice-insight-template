@@ -83,7 +83,8 @@ function sampleResult(): Result {
   };
 }
 
-export function Analyzer() {
+/** `gated` shows the lock button; it is only meaningful when ACCESS_CODE is set. */
+export function Analyzer({ gated = false }: { gated?: boolean }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const rowRefs = useRef<Record<number, HTMLLIElement | null>>({});
@@ -245,7 +246,7 @@ export function Analyzer() {
             backs it — click one to hear it.
           </p>
         </div>
-        <LockButton />
+        {gated && <LockButton />}
       </header>
 
       <Panel>

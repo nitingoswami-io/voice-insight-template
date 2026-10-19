@@ -1,10 +1,14 @@
 import { Analyzer } from "@/components/analyzer";
+import { PROJECT_NAME } from "@/lib/site";
+import { gateActive } from "@/lib/access";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Demo — Lisn10",
-  description: "Upload a call recording and read the scorecard.",
+  title: `Demo — ${PROJECT_NAME}`,
+  description: "Run a call recording through the pipeline and inspect each stage's output.",
 };
 
 export default function DemoPage() {
-  return <Analyzer />;
+  return <Analyzer gated={gateActive()} />;
 }

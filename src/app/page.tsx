@@ -1,19 +1,19 @@
 import {
-  Capabilities,
-  ClosingCta,
-  Evidence,
+  BuildYourOwn,
+  Concepts,
   Hero,
-  HowItWorks,
+  Pipeline,
+  Verification,
 } from "@/components/landing/sections";
 
 export default function Home() {
   return (
     <>
       <Hero />
-      <Capabilities />
-      <HowItWorks />
-      <Evidence />
-      <ClosingCta />
+      <Pipeline />
+      <Concepts />
+      <Verification />
+      <BuildYourOwn />
     </>
   );
 }

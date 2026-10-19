@@ -22,7 +22,7 @@ const setNodeEnv = (value: string) => vi.stubEnv("NODE_ENV", value);
 const setCode = (value: string) => vi.stubEnv("ACCESS_CODE", value);
 
 describe("isProtectedPath", () => {
-  it("covers the demo and every route that spends money", () => {
+  it("covers the demo and every route that calls a metered API", () => {
     for (const p of [
       "/demo",
       "/demo/anything",
@@ -34,9 +34,9 @@ describe("isProtectedPath", () => {
     }
   });
 
-  it("leaves the shop window open", () => {
-    // Gating these would hide the product from the people it is meant to reach.
-    for (const p of ["/", "/contact", "/api/contact", "/unlock", "/api/access"]) {
+  it("leaves the overview and the unlock flow open", () => {
+    // Gating the unlock route would leave no way in.
+    for (const p of ["/", "/unlock", "/api/access"]) {
       expect(isProtectedPath(p)).toBe(false);
     }
   });
@@ -53,12 +53,18 @@ describe("gateActive", () => {
     expect(gateActive()).toBe(false);
   });
 
-  it("locks in production even with no code set", () => {
-    // The whole point: forgetting to configure the gate must never be the
-    // thing that publishes an unmetered, paid endpoint.
+  it("stays open in production when no code is set — the gate is opt-in", () => {
+    // A fresh fork should work on its first deploy. Setting a code is a
+    // documented step before sharing a public URL.
     setNodeEnv("production");
-    expect(gateActive()).toBe(true);
+    expect(gateActive()).toBe(false);
     expect(accessConfigured()).toBe(false);
+  });
+
+  it("is active in production once a code exists", () => {
+    setNodeEnv("production");
+    setCode("let-me-in-please");
+    expect(gateActive()).toBe(true);
   });
 
   it("is active in development once a code exists", () => {
@@ -160,7 +166,7 @@ describe("safeNext", () => {
 
   it("refuses a same-origin path the gate does not protect", () => {
     // No point bouncing someone to a public page through the unlock flow.
-    expect(safeNext("/contact")).toBe("/demo");
+    expect(safeNext("/unlock")).toBe("/demo");
     expect(safeNext("/")).toBe("/demo");
   });
 

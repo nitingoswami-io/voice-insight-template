@@ -2,15 +2,14 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Badge } from "@/components/ui";
 import { LegendItem } from "@/components/charts/talk-share";
-import { CONTACT_ENABLED } from "@/lib/site";
+import { REPO_URL } from "@/lib/site";
 
 /**
  * Landing sections.
  *
- * Every claim on this page is one the code actually backs. There are no
- * customer logos, testimonials, accuracy percentages, or adoption counts,
- * because none of those exist yet — and a product whose pitch is "we do not
- * show you things we cannot support" cannot open with invented proof.
+ * This page is a guided tour of the pipeline, not a pitch. Each section points
+ * at the file that implements what it describes, so a reader can go from the
+ * idea to the code in one click. Every number on it comes from real runs.
  */
 
 function Section({
@@ -46,6 +45,18 @@ function Section({
   );
 }
 
+/** A repo path rendered as a link to the file on GitHub. */
+function SourceLink({ path }: { path: string }) {
+  return (
+    <a
+      href={`${REPO_URL}/blob/main/${path}`}
+      className="font-mono text-[11px] text-[var(--accent)] hover:underline"
+    >
+      {path}
+    </a>
+  );
+}
+
 /* ------------------------------------------------------------------- hero -- */
 
 export function Hero() {
@@ -53,19 +64,20 @@ export function Hero() {
     <section className="py-20 sm:py-28">
       <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-[var(--border)] px-3 py-1 text-xs text-[var(--muted)]">
         <span className="size-1.5 rounded-full bg-[var(--series-agent)]" />
-        Call quality analysis for BPOs
+        Open source · MIT licensed · reference implementation
       </p>
 
       <h1 className="max-w-3xl text-4xl font-medium leading-[1.1] tracking-tight sm:text-[52px]">
-        Every call scored.
+        Audio in, grounded insight out.
         <br />
-        <span className="text-[var(--muted)]">Every claim quoted.</span>
+        <span className="text-[var(--muted)]">A pipeline you can read and fork.</span>
       </h1>
 
       <p className="mt-6 max-w-xl text-[17px] leading-relaxed text-[var(--muted)]">
-        Lisn10 turns call recordings into coaching your team leaders can act on —
-        in the language the call was actually spoken in, with the audio attached
-        to every observation.
+        A working, end-to-end example of speech-to-text followed by LLM
+        inference — with every model claim checked against the transcript before
+        it is shown. The worked example is call-centre quality review; the
+        pattern carries over to any recorded conversation.
       </p>
 
       <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -73,22 +85,22 @@ export function Hero() {
           href="/demo"
           className="rounded-md bg-[var(--foreground)] px-5 py-2.5 text-sm text-[var(--background)] transition-opacity hover:opacity-90"
         >
-          Analyse a call →
+          Run the demo →
         </Link>
-        <Link
-          href="#evidence"
+        <a
+          href={REPO_URL}
           className="rounded-md border border-[var(--border-strong)] px-5 py-2.5 text-sm transition-colors hover:bg-[var(--accent-soft)]"
         >
-          Why you can trust the output
-        </Link>
+          Read the source
+        </a>
       </div>
 
       <dl className="mt-14 grid max-w-2xl grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-4">
         {[
-          ["99", "languages, auto-detected"],
-          ["~50s", "per call, end to end"],
-          ["0", "integrations to set up"],
-          ["100%", "of claims quote-checked"],
+          ["3", "stages: transcribe, infer, verify"],
+          ["0", "databases or storage buckets"],
+          ["~50s", "per 10-minute call, measured"],
+          ["~$0.05", "API cost per 10-minute call"],
         ].map(([v, l]) => (
           <div key={l}>
             <dt className="text-2xl font-medium tracking-tight">{v}</dt>
@@ -100,56 +112,134 @@ export function Hero() {
   );
 }
 
-/* ----------------------------------------------------------- capabilities -- */
+/* --------------------------------------------------------------- pipeline -- */
 
-const CAPABILITIES: Array<{ title: string; body: string; visual: ReactNode }> = [
+const STEPS = [
   {
-    title: "Any language, undeclared",
-    body: "Nobody tags the recording. The language is detected per call — 99 of them — and the call is judged in the language it was spoken in.",
-    visual: <ScriptSampler />,
+    n: "01",
+    title: "Upload and transcribe",
+    body: "Audio is relayed to the speech-to-text provider. The language is detected, the two speakers are separated, and every word gets a timestamp and a confidence score.",
+    path: "src/lib/providers/asr-assemblyai.ts",
   },
   {
-    title: "Speakers separated",
-    body: "Agent and customer are split automatically, so talk share, interruptions and every quote are attributed to the right person.",
-    visual: <MiniTimeline />,
+    n: "02",
+    title: "Measure without a model",
+    body: "Talk share, silence and interruptions are plain arithmetic over the word timings. Keeping these out of the LLM makes them repeatable.",
+    path: "src/lib/metrics.ts",
   },
   {
-    title: "Evidence on every claim",
-    body: "No observation appears without the verbatim quote, timestamp and speaker behind it. Click one and the audio jumps there.",
-    visual: <QuoteCard />,
+    n: "03",
+    title: "Infer with structured output",
+    body: "The transcript goes to the LLM in its original language with a rubric and a JSON schema. Every observation must cite a verbatim quote, a timestamp and a speaker.",
+    path: "src/lib/analysis/prompt.ts",
   },
   {
-    title: "Measured kept apart from judged",
-    body: "Talk ratio, silence and interruptions are arithmetic over the audio — no model involved. Only the coaching is an opinion, and it is labelled as one.",
-    visual: <MeasuredSplit />,
-  },
-  {
-    title: "Nothing is pre-translated",
-    body: "Translating before analysis destroys what is being assessed — आप versus तू, usted versus tú, the moment a frustrated customer switches out of English.",
-    visual: <RegisterCard />,
-  },
-  {
-    title: "Coaching, not just a number",
-    body: "“Showed empathy” helps nobody. Findings name what to do differently, tied to the moment it should have happened.",
-    visual: <CoachingCard />,
+    n: "04",
+    title: "Verify before showing",
+    body: "Each quote is located in the real transcript. Anything that cannot be found, is at the wrong time, or is attributed to the wrong speaker is dropped and counted.",
+    path: "src/lib/verify.ts",
   },
 ];
 
-export function Capabilities() {
+export function Pipeline() {
   return (
     <Section
-      id="capabilities"
-      eyebrow="Capabilities"
-      title="Built for floors that run in six languages before lunch"
-      lede="Everything below is a behaviour of the product, not a roadmap item."
+      id="pipeline"
+      eyebrow="The pipeline"
+      title="Four stages, each in its own file"
+      lede="Three short API routes drive it from the browser: upload, poll for the transcript, then analyse. No queue, no webhook, no database."
+    >
+      <ol className="mt-10 grid gap-px overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--border)] sm:grid-cols-2 lg:grid-cols-4">
+        {STEPS.map((s) => (
+          <li key={s.n} className="flex flex-col bg-[var(--surface)] p-6">
+            <span className="font-mono text-[11px] text-[var(--series-agent)]">
+              {s.n}
+            </span>
+            <h3 className="mt-3 text-sm font-medium">{s.title}</h3>
+            <p className="mt-2 flex-1 text-[13px] leading-relaxed text-[var(--muted)]">
+              {s.body}
+            </p>
+            <p className="mt-4">
+              <SourceLink path={s.path} />
+            </p>
+          </li>
+        ))}
+      </ol>
+
+      <pre className="mt-6 overflow-x-auto rounded-lg border border-[var(--border)] bg-[var(--surface)] p-5 font-mono text-[12px] leading-relaxed text-[var(--muted)]">
+{`Browser
+ ├─ POST /api/transcribe   audio bytes → ASR provider, returns a job id   ~2s
+ ├─ GET  /api/status?id=   poll every 3s                                 30-60s
+ └─ POST /api/insight      transcript → LLM → verify quotes              ~20s`}
+      </pre>
+    </Section>
+  );
+}
+
+/* --------------------------------------------------------------- concepts -- */
+
+const CONCEPTS: Array<{
+  title: string;
+  body: string;
+  visual: ReactNode;
+  path: string;
+}> = [
+  {
+    title: "Language detection, not declaration",
+    body: "Nobody tags the recording. The ASR provider detects the language per file, so mixed-language datasets need no preprocessing.",
+    visual: <ScriptSampler />,
+    path: "src/lib/providers/asr-assemblyai.ts",
+  },
+  {
+    title: "Speaker diarization",
+    body: "Two speakers are split automatically. Diarization gives labels (A/B), not roles — the template guesses the agent and says that it is a guess.",
+    visual: <MiniTimeline />,
+    path: "src/lib/metrics.ts",
+  },
+  {
+    title: "Evidence-carrying output",
+    body: "The JSON schema makes a quote, timestamp and speaker mandatory on every observation. In the UI, clicking a quote seeks the audio to that moment.",
+    visual: <QuoteCard />,
+    path: "src/lib/analysis/schema.ts",
+  },
+  {
+    title: "Measured kept apart from judged",
+    body: "Deterministic metrics and model opinions are computed separately and labelled separately, so a reader always knows which is which.",
+    visual: <MeasuredSplit />,
+    path: "src/lib/metrics.ts",
+  },
+  {
+    title: "No pre-translation",
+    body: "Translating before inference destroys what is being assessed — आप versus तू, usted versus tú, a switch out of English. The model reads the original.",
+    visual: <RegisterCard />,
+    path: "src/lib/analysis/prompt.ts",
+  },
+  {
+    title: "A rubric as data",
+    body: "One list of categories drives the prompt, the output schema and the chart. Change the list and you have a different analyser.",
+    visual: <CoachingCard />,
+    path: "src/lib/quality-guide.ts",
+  },
+];
+
+export function Concepts() {
+  return (
+    <Section
+      id="concepts"
+      eyebrow="Concepts"
+      title="Techniques worth borrowing"
+      lede="Each of these is a design decision you will face in any voice-to-insight system. Each one links to where it is implemented."
     >
       <div className="mt-10 grid gap-px overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--border)] sm:grid-cols-2 lg:grid-cols-3">
-        {CAPABILITIES.map((c) => (
-          <div key={c.title} className="bg-[var(--surface)] p-6">
+        {CONCEPTS.map((c) => (
+          <div key={c.title} className="flex flex-col bg-[var(--surface)] p-6">
             <div className="mb-5 h-[72px]">{c.visual}</div>
             <h3 className="text-sm font-medium">{c.title}</h3>
-            <p className="mt-2 text-[13px] leading-relaxed text-[var(--muted)]">
+            <p className="mt-2 flex-1 text-[13px] leading-relaxed text-[var(--muted)]">
               {c.body}
+            </p>
+            <p className="mt-4">
+              <SourceLink path={c.path} />
             </p>
           </div>
         ))}
@@ -158,7 +248,7 @@ export function Capabilities() {
   );
 }
 
-/* -------------------------------------------------- capability mini-visuals */
+/* ---------------------------------------------------- concept mini-visuals */
 
 function ScriptSampler() {
   const samples = ["नमस्ते सर", "வணக்கம்", "¿Bueno?", "مرحبا", "Good morning"];
@@ -279,76 +369,26 @@ function CoachingCard() {
   );
 }
 
-/* ------------------------------------------------------------ how it works -- */
+/* ----------------------------------------------------------- verification -- */
 
-const STEPS = [
-  {
-    n: "01",
-    title: "Upload the recording",
-    body: "Drop in an MP3 or M4A. No language tag, no speaker mapping, no metadata.",
-  },
-  {
-    n: "02",
-    title: "Transcribe and separate",
-    body: "The language is detected and the two speakers are split, with a confidence score on every word.",
-  },
-  {
-    n: "03",
-    title: "Analyse in the original language",
-    body: "The call is assessed as spoken. Every observation must cite a verbatim quote, a timestamp and a speaker.",
-  },
-  {
-    n: "04",
-    title: "Verify before showing",
-    body: "Each quote is located in the real transcript. Anything that cannot be found is discarded and counted.",
-  },
-];
-
-export function HowItWorks() {
+export function Verification() {
   return (
     <Section
-      id="how"
-      eyebrow="How it works"
-      title="Four steps, about fifty seconds"
-      lede="One upload to a finished scorecard, with no queue to configure and nothing to integrate first."
-    >
-      <ol className="mt-10 grid gap-px overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--border)] sm:grid-cols-2 lg:grid-cols-4">
-        {STEPS.map((s) => (
-          <li key={s.n} className="bg-[var(--surface)] p-6">
-            <span className="font-mono text-[11px] text-[var(--series-agent)]">
-              {s.n}
-            </span>
-            <h3 className="mt-3 text-sm font-medium">{s.title}</h3>
-            <p className="mt-2 text-[13px] leading-relaxed text-[var(--muted)]">
-              {s.body}
-            </p>
-          </li>
-        ))}
-      </ol>
-    </Section>
-  );
-}
-
-/* --------------------------------------------------------------- evidence -- */
-
-export function Evidence() {
-  return (
-    <Section
-      id="evidence"
-      eyebrow="Evidence"
-      title="Most tools ask you to trust the model. This one checks it."
-      lede="A QA score influences an agent's review and their pay. A quote the model invented is a fabricated accusation against a named employee — worse than having no product at all. So model output is treated as untrusted input."
+      id="verification"
+      eyebrow="Verification"
+      title="Treat model output as untrusted input"
+      lede="In quality review, an invented quote becomes a false claim about a named person. So the pipeline does not trust the LLM: every quote is checked against the transcript before it reaches the page."
     >
       <div className="mt-10 grid gap-6 lg:grid-cols-[1.1fr_1fr]">
         <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6">
           <h3 className="text-sm font-medium">
-            What happens to every claim, before you see it
+            Three checks on every claim
           </h3>
           <ul className="mt-5 space-y-4">
             {[
               [
                 "Is the quote really in the transcript?",
-                "Matched against the actual word stream, tolerant of punctuation and reformatting.",
+                "Fuzzy-matched against the word stream, tolerant of punctuation and reformatting.",
               ],
               [
                 "Was it said when the model says it was?",
@@ -374,7 +414,8 @@ export function Evidence() {
           </ul>
           <p className="mt-5 border-t border-[var(--border)] pt-4 text-[13px] leading-relaxed text-[var(--muted)]">
             Anything that fails is <strong>dropped and counted</strong>. The count
-            appears on every call, and if nothing survives, no score is shown.
+            is shown with every result, and if nothing survives, no score is
+            shown. See <SourceLink path="src/lib/verify.ts" /> and its tests.
           </p>
         </div>
 
@@ -403,7 +444,8 @@ export function Evidence() {
             </p>
             <p className="mt-2 text-[12px] leading-relaxed text-[var(--caution)]">
               Plausible, well-formed, and never said on the call. This is what the
-              layer exists to catch — and you are told it happened.
+              verification step exists to catch — and the reader is told it
+              happened.
             </p>
           </div>
         </div>
@@ -412,36 +454,78 @@ export function Evidence() {
   );
 }
 
-/* -------------------------------------------------------------------- CTA -- */
+/* ---------------------------------------------------------- build your own -- */
 
-export function ClosingCta() {
+const ADAPT: Array<{ title: string; body: string; path: string }> = [
+  {
+    title: "Swap the speech-to-text provider",
+    body: "Implement the four-method AsrProvider interface — upload, submit, status, fetchResult — for Whisper, Deepgram or anything else.",
+    path: "src/lib/providers/asr.ts",
+  },
+  {
+    title: "Swap the LLM",
+    body: "The client speaks the OpenAI-compatible protocol, so another hosted model or a self-hosted vLLM endpoint is a base-URL and model-name change.",
+    path: "src/lib/providers/llm.ts",
+  },
+  {
+    title: "Change the use case",
+    body: "Replace the rubric and the system prompt to review sales calls, interviews, clinic visits or lectures. The verifier does not care what the domain is.",
+    path: "src/lib/quality-guide.ts",
+  },
+];
+
+export function BuildYourOwn() {
   return (
-    <section className="border-t border-[var(--border)] py-20">
-      <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-8 py-12 text-center">
-        <h2 className="text-2xl font-medium tracking-tight">
-          Run one of your own calls through it
-        </h2>
-        <p className="mx-auto mt-3 max-w-md text-[15px] leading-relaxed text-[var(--muted)]">
-          Upload a recording and read the scorecard. Then click a quote and check
-          it against the audio yourself — that is the whole pitch.
-        </p>
-        <div className="mt-7 flex flex-wrap justify-center gap-3">
-          <Link
-            href="/demo"
-            className="rounded-md bg-[var(--foreground)] px-6 py-2.5 text-sm text-[var(--background)] transition-opacity hover:opacity-90"
-          >
-            Open the demo →
-          </Link>
-          {CONTACT_ENABLED && (
-            <Link
-              href="/contact"
-              className="rounded-md border border-[var(--border-strong)] px-6 py-2.5 text-sm transition-colors hover:bg-[var(--accent-soft)]"
+    <Section
+      id="build"
+      eyebrow="Build your own"
+      title="Where to make it your own"
+      lede="The call-centre framing lives in a rubric and a prompt. The pipeline around them is generic, and each provider sits behind a small seam."
+    >
+      <div className="mt-10 grid gap-px overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--border)] lg:grid-cols-3">
+        {ADAPT.map((a) => (
+          <div key={a.title} className="flex flex-col bg-[var(--surface)] p-6">
+            <h3 className="text-sm font-medium">{a.title}</h3>
+            <p className="mt-2 flex-1 text-[13px] leading-relaxed text-[var(--muted)]">
+              {a.body}
+            </p>
+            <p className="mt-4">
+              <SourceLink path={a.path} />
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
+        <pre className="overflow-x-auto rounded-lg border border-[var(--border)] bg-[var(--surface)] p-5 font-mono text-[12px] leading-relaxed">
+{`git clone ${REPO_URL}.git
+cd voice-insight-template
+npm install
+cp .env.example .env.local   # add two API keys
+npm run dev`}
+        </pre>
+        <div className="flex flex-col justify-center gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6">
+          <p className="text-[13px] leading-relaxed text-[var(--muted)]">
+            You need an AssemblyAI key for transcription and an xAI key for
+            analysis; both offer free credit. Tests run with no keys and no
+            network.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <a
+              href={`${REPO_URL}/blob/main/docs/ARCHITECTURE.md`}
+              className="rounded-md bg-[var(--foreground)] px-4 py-2 text-sm text-[var(--background)] transition-opacity hover:opacity-90"
             >
-              Talk to us
-            </Link>
-          )}
+              Architecture guide
+            </a>
+            <a
+              href={`${REPO_URL}/blob/main/CONTRIBUTING.md`}
+              className="rounded-md border border-[var(--border-strong)] px-4 py-2 text-sm transition-colors hover:bg-[var(--accent-soft)]"
+            >
+              Contributing
+            </a>
+          </div>
         </div>
       </div>
-    </section>
+    </Section>
   );
 }

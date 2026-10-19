@@ -45,9 +45,9 @@ export function UnlockForm({ next }: { next: string }) {
        * A hard navigation, deliberately — not router.replace().
        *
        * A soft navigation resolves from Next's client Router Cache, which
-       * already holds the middleware redirect from /demo to here. It would
+       * already holds the proxy redirect from /demo to here. It would
        * bounce straight back and the form would appear to do nothing, with the
-       * new cookie never consulted. A full page load re-runs middleware against
+       * new cookie never consulted. A full page load re-runs the proxy against
        * the cookie the browser just stored.
        *
        * `busy` is left set so the button cannot be pressed twice while the
