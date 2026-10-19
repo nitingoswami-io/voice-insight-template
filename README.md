@@ -10,11 +10,23 @@ you get a transcript with the speakers separated, plus a short assessment —
 what went well, what to coach — where **every observation carries the verbatim
 quote that backs it**. Click a quote and the audio jumps to that moment.
 
+**Live demo:** [lisn10.vercel.app](https://lisn10.vercel.app) — click
+**View sample output** on `/demo` for a free walkthrough, or upload a short
+clip (the public demo caps file size to keep API costs bounded).
+
 It is meant to be read, run and forked. Swap the rubric and the prompt, and the
 same pipeline can review sales calls, interviews, lectures or clinic visits.
 
 > **Status:** learning template and proof of concept. Not hardened for
 > production — see [Known limits](#known-limits).
+
+![Pipeline: a call recording is transcribed by AssemblyAI, the LLM judges the transcript with quotes, and a verifier checks every quote against the transcript's words before the results page shows it. Deterministic metrics come from the same words with no model.](docs/figures/fig-02-pipeline.svg)
+
+*The pipeline. Speech-to-text turns audio into words with speakers and
+timings. The LLM (`grok-4.5`, JSON-schema output) proposes claims, each with a
+quote. The verifier checks every quote against the word stream and keeps only
+grounded claims. Talk share and silence are counted from the same words with no
+model. The teal path is the LLM and verification path.*
 
 ---
 
@@ -35,7 +47,9 @@ same pipeline can review sales calls, interviews, lectures or clinic visits.
 - **Zero infrastructure.** No database, storage bucket, queue or webhook — just
   two API keys.
 
-The full walkthrough is in **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
+The full walkthrough is in **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**,
+and the design document with sequence, state, class and data diagrams is in
+**[docs/DESIGN.md](docs/DESIGN.md)**.
 
 ---
 

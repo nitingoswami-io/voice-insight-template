@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 470" role="img" aria-label="Entity-relationship diagram of the /api/insight response: an insight scores rubric categories and holds points, each citing one piece of evidence that is verified against the transcript's words; verification stats record every dropped quote. Nothing is persisted." class="sketch" font-family="Kalam, 'Segoe Print', 'Comic Sans MS', cursive" font-size="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+<style>/* standalone viewing only — stripped when the figure is inlined into a page */
+svg{color:#17202b} .sk-bg{fill:#ffffff} .sk-fill{fill:#e3f2ef} .sk-accent{stroke:#0f766e} text.sk-accent{fill:#0f766e;stroke:none}
+@media (prefers-color-scheme:dark){svg{color:#e4e9ef} .sk-bg{fill:#161d25} .sk-fill{fill:#15302d} .sk-accent{stroke:#4fd1c0} text.sk-accent{fill:#4fd1c0}}
+</style>
+<defs>
+<filter id="rough" x="-3%" y="-3%" width="106%" height="106%"><feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="12" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G"/></filter>
+<marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M1.5 1.5 L8.5 5 L1.5 8.5" fill="none" stroke="currentColor" stroke-width="1.4"/></marker>
+<marker id="arrow-accent" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="sk-accent" d="M1.5 1.5 L8.5 5 L1.5 8.5" fill="none" stroke="currentColor" stroke-width="1.4"/></marker>
+</defs>
+<g filter="url(#rough)">
+  <rect x="20" y="20" width="230" height="116" rx="4"/>
+  <path d="M20 48 H250"/>
+  <rect x="20" y="250" width="230" height="116" rx="4"/>
+  <path d="M20 278 H250"/>
+  <rect x="330" y="20" width="240" height="116" rx="4"/>
+  <path d="M330 48 H570"/>
+  <rect x="330" y="180" width="240" height="76" rx="4"/>
+  <path d="M330 208 H570"/>
+  <rect x="330" y="300" width="240" height="136" rx="4" class="sk-accent"/>
+  <path d="M330 328 H570" class="sk-accent"/>
+  <rect x="650" y="20" width="230" height="96" rx="4"/>
+  <path d="M650 48 H880"/>
+  <rect x="650" y="190" width="230" height="56" rx="4"/>
+  <path d="M650 218 H880"/>
+  <rect x="650" y="300" width="230" height="96" rx="4"/>
+  <path d="M650 328 H880"/>
+  <path d="M135 136 V250"/>
+  <path d="M128 146 H142"/>
+  <path d="M128 250 L135 238 L142 250 M135 250 V238"/>
+  <path d="M570 60 H650"/>
+  <path d="M580 53 V67"/>
+  <path d="M650 53 L638 60 L650 67 M650 60 H638"/>
+  <path d="M450 136 V180"/>
+  <path d="M443 146 H457"/>
+  <path d="M443 180 L450 168 L457 180 M450 180 V168"/>
+  <path d="M450 256 V300"/>
+  <path d="M443 266 H457"/>
+  <path d="M443 290 H457"/>
+  <path d="M330 370 H250" class="sk-accent"/>
+  <path d="M250 363 L262 370 L250 377 M250 370 H262"/>
+  <path d="M765 246 V300"/>
+  <path d="M758 256 H772"/>
+  <path d="M758 300 L765 288 L772 300 M765 300 V288"/>
+</g>
+<g fill="currentColor" stroke="none">
+  <text x="135.0" y="39" text-anchor="middle" font-weight="700">Transcript</text>
+  <text x="30" y="66" text-anchor="start" font-size="11.5">languageCode</text>
+  <text x="240" y="66" text-anchor="end" font-size="11">detected</text>
+  <text x="30" y="86" text-anchor="start" font-size="11.5">durationMs</text>
+  <text x="30" y="106" text-anchor="start" font-size="11.5">agentSpeakerLabel</text>
+  <text x="240" y="106" text-anchor="end" font-size="11">a guess</text>
+  <text x="30" y="126" text-anchor="start" font-size="11.5">utterances[]</text>
+  <text x="240" y="126" text-anchor="end" font-size="11">turns</text>
+  <text x="135.0" y="269" text-anchor="middle" font-weight="700">Word</text>
+  <text x="30" y="296" text-anchor="start" font-size="11.5">text</text>
+  <text x="30" y="316" text-anchor="start" font-size="11.5">startMs · endMs</text>
+  <text x="30" y="336" text-anchor="start" font-size="11.5">confidence</text>
+  <text x="240" y="336" text-anchor="end" font-size="11">0–1</text>
+  <text x="30" y="356" text-anchor="start" font-size="11.5">speaker</text>
+  <text x="240" y="356" text-anchor="end" font-size="11">"A" / "B"</text>
+  <text x="450.0" y="39" text-anchor="middle" font-weight="700">Insight</text>
+  <text x="340" y="66" text-anchor="start" font-size="11.5">summary</text>
+  <text x="340" y="86" text-anchor="start" font-size="11.5">outcome</text>
+  <text x="560" y="86" text-anchor="end" font-size="11">resolved…</text>
+  <text x="340" y="106" text-anchor="start" font-size="11.5">score</text>
+  <text x="560" y="106" text-anchor="end" font-size="11">null = abstain</text>
+  <text x="340" y="126" text-anchor="start" font-size="11.5">scoreBasis</text>
+  <text x="450.0" y="199" text-anchor="middle" font-weight="700">Point</text>
+  <text x="340" y="226" text-anchor="start" font-size="11.5">point</text>
+  <text x="560" y="226" text-anchor="end" font-size="11">one sentence</text>
+  <text x="340" y="246" text-anchor="start" font-size="11.5">category</text>
+  <text x="560" y="246" text-anchor="end" font-size="11">rubric key</text>
+  <text x="450.0" y="319" text-anchor="middle" class="sk-accent" font-weight="700">Evidence</text>
+  <text x="340" y="346" text-anchor="start" font-size="11.5">quoteOriginal</text>
+  <text x="560" y="346" text-anchor="end" font-size="11">verified</text>
+  <text x="340" y="366" text-anchor="start" font-size="11.5">quoteEnglish</text>
+  <text x="560" y="366" text-anchor="end" font-size="11">gloss only</text>
+  <text x="340" y="386" text-anchor="start" font-size="11.5">startMs · endMs</text>
+  <text x="560" y="386" text-anchor="end" font-size="11">snapped</text>
+  <text x="340" y="406" text-anchor="start" font-size="11.5">speaker</text>
+  <text x="340" y="426" text-anchor="start" font-size="11.5">asrConfidence</text>
+  <text x="560" y="426" text-anchor="end" font-size="11">mean</text>
+  <text x="765.0" y="39" text-anchor="middle" font-weight="700">CategoryScore</text>
+  <text x="660" y="66" text-anchor="start" font-size="11.5">key</text>
+  <text x="870" y="66" text-anchor="end" font-size="11">rubric key</text>
+  <text x="660" y="86" text-anchor="start" font-size="11.5">score</text>
+  <text x="870" y="86" text-anchor="end" font-size="11">null = abstain</text>
+  <text x="660" y="106" text-anchor="start" font-size="11.5">note</text>
+  <text x="765.0" y="209" text-anchor="middle" font-weight="700">VerificationStats</text>
+  <text x="660" y="236" text-anchor="start" font-size="11.5">checked</text>
+  <text x="870" y="236" text-anchor="end" font-size="11">count</text>
+  <text x="765.0" y="319" text-anchor="middle" font-weight="700">DroppedQuote</text>
+  <text x="660" y="346" text-anchor="start" font-size="11.5">point</text>
+  <text x="660" y="366" text-anchor="start" font-size="11.5">reason</text>
+  <text x="870" y="366" text-anchor="end" font-size="11">3 kinds</text>
+  <text x="660" y="386" text-anchor="start" font-size="11.5">quote</text>
+  <rect class="sk-bg" x="121" y="188" width="28" height="17" rx="3"/>
+  <text x="135" y="200" text-anchor="middle" font-size="12">has</text>
+  <rect class="sk-bg" x="586" y="40" width="48" height="17" rx="3"/>
+  <text x="610" y="52" text-anchor="middle" font-size="12">scores</text>
+  <rect class="sk-bg" x="379" y="150" width="142" height="17" rx="3"/>
+  <text x="450" y="162" text-anchor="middle" font-size="12">strengths · coaching</text>
+  <rect class="sk-bg" x="429" y="270" width="42" height="17" rx="3"/>
+  <text x="450" y="282" text-anchor="middle" font-size="12">cites</text>
+  <rect class="sk-bg" x="252" y="350" width="75" height="17" rx="3"/>
+  <text x="290" y="362" text-anchor="middle" class="sk-accent" font-size="12">matched to</text>
+  <rect class="sk-bg" x="738" y="266" width="55" height="17" rx="3"/>
+  <text x="765" y="278" text-anchor="middle" font-size="12">records</text>
+</g>
+</svg>

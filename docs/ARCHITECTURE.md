@@ -12,6 +12,10 @@ where every observation carries a verbatim quote from the call.
 
 ## 1. The shape of it
 
+![Pipeline overview](figures/fig-02-pipeline.svg)
+
+The diagrams for every flow, state and module are in [DESIGN.md](DESIGN.md).
+
 ```
                 ┌─────────────── browser ───────────────┐
                 │  file input → object URL (playback)   │

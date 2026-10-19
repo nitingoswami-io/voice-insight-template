@@ -9,15 +9,24 @@ interfaces, a new example rubric, better tests, or bug fixes.
 
 Requires Node.js 20.9 or later.
 
+1. [Fork the repository](https://github.com/nitingoswami-io/voice-insight-template/fork)
+   to your own GitHub account.
+2. Clone your fork, add the original as `upstream`, and create a branch:
+
 ```bash
-git clone https://github.com/nitingoswami-io/voice-insight-template.git
+git clone https://github.com/<your-username>/voice-insight-template.git
 cd voice-insight-template
+git remote add upstream https://github.com/nitingoswami-io/voice-insight-template.git
+git checkout -b my-change
 npm install
 cp .env.example .env.local   # only needed to run the live pipeline
 npm run dev
 ```
 
 The test suite needs no API keys and no network.
+
+Keep your branch current with `git pull upstream main`, then push to your fork
+and open a pull request against `main`.
 
 ## Before opening a pull request
 
