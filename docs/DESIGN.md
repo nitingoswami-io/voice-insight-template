@@ -8,7 +8,7 @@
 |---|---|---|---|
 | Next.js 16 · AssemblyAI · zod · Tailwind CSS 4 · Vitest | `grok-4.5` (xAI, OpenAI-compatible API) · AssemblyAI default speech model | 19 Oct 2026 | Approved · built |
 
-[Live demo](https://lisn10.vercel.app) · [View code](https://github.com/nitingoswami-io/voice-insight-template) · [Fork](https://github.com/nitingoswami-io/voice-insight-template/fork) · [Report an issue](https://github.com/nitingoswami-io/voice-insight-template/issues/new) · [Contribute](https://github.com/nitingoswami-io/voice-insight-template/blob/main/CONTRIBUTING.md)
+[Live demo](https://voice-insight.nitingoswami.io) · [View code](https://github.com/nitingoswami-io/voice-insight-template) · [Fork](https://github.com/nitingoswami-io/voice-insight-template/fork) · [Report an issue](https://github.com/nitingoswami-io/voice-insight-template/issues/new) · [Contribute](https://github.com/nitingoswami-io/voice-insight-template/blob/main/CONTRIBUTING.md)
 
 ---
 
@@ -171,14 +171,14 @@ Nothing is persisted, so there is no schema to migrate. The shapes live in TypeS
 
 ## 7. Frontend design
 
-![Fig. 11: Frontend component tree.](figures/fig-11-frontend.svg)
+![Fig. 11: Frontend component tree: the shared masthead and footer around the Analyzer, which owns all state.](figures/fig-11-frontend.svg)
 
-*Fig. 11: Frontend component tree.*
+*Fig. 11: Frontend component tree: the shared masthead and footer around the Analyzer, which owns all state.*
 
+- The root layout wraps every page in the shared demo look (newsroom tool, from the demo-doc skill): a masthead strip linking The Inference Times and this post, the pipeline as a stage strip, a status note with the public upload limit, a night-edition toggle, and a footer linking the design doc, source, fork and licence.
 - `demo/page.tsx` is a server component: it reads the access cookie and passes `maxBytes`, `gated` and `canUnlock` to the client `Analyzer`, which owns all state.
 - The Analyzer calls the three routes with plain `fetch`, polling `/api/status` every 3 s, and shows a stage bar with elapsed time.
-- One `seek(ms)` function moves the `<audio>` element. Quotes, the call timeline and transcript lines all call it, which is what makes the evidence checkable by ear.
-- Measured panels are labelled separately from the model's judgement, and the Provenance panel shows how many quotes were checked and dropped.
+- One `seek(ms)` function moves the `<audio>` element. Quotes, the call timeline and transcript lines all call it, which is what makes the evidence checkable by ear. Measured panels are labelled apart from the model's judgement, and Provenance shows how many quotes were checked and dropped.
 
 ## 8. Project layout
 
@@ -194,14 +194,14 @@ voice-insight-template/
 │   └── figures/                    fig-01 … fig-11 (hand-drawn SVG)
 └── src/
     ├── proxy.ts                    optional access gate
-    ├── app/                        page.tsx · demo/ · unlock/ · api/{transcribe, status, insight, access}
-    ├── components/                 analyzer.tsx · charts/ · landing/ · unlock-form · lock-button
+    ├── app/                        layout · demo-look.css · page · demo/ · unlock/ · api/{transcribe, status, insight, access}
+    ├── components/                 analyzer.tsx · charts/ · landing/ · demo-look/ · unlock-form · lock-button
     └── lib/                        access · limits · metrics · verify · quality-guide · analysis/ · providers/
 ```
 
 ## 9. Run & verify
 
-No install needed to try it: the [live demo](https://lisn10.vercel.app) runs in public mode with a capped upload size, and **View sample output** works without uploading anything. To run it yourself:
+No install needed to try it: the [live demo](https://voice-insight.nitingoswami.io) runs in public mode with a capped upload size, and **View sample output** works without uploading anything. To run it yourself:
 
 ```bash
 git clone https://github.com/nitingoswami-io/voice-insight-template.git && cd voice-insight-template

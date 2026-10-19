@@ -12,3 +12,7 @@ export const REPO_URL = "https://github.com/nitingoswami-io/voice-insight-templa
 
 /** The design document, linked from the masthead and footer. */
 export const DESIGN_DOC_URL = `${REPO_URL}/blob/main/docs/DESIGN.md`;
+
+/** The Inference Times, and this demo's post there. Linked from the masthead strip. */
+export const SITE_URL = "https://www.nitingoswami.io";
+export const POST_URL = `${SITE_URL}/demos/voice-insight-template`;

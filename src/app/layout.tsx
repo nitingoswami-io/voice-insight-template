@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { DemoFooter, Masthead, THEME_BOOT_SCRIPT } from "@/components/demo-look";
 import { publicMaxBytes } from "@/lib/access";
 import { formatMb } from "@/lib/limits";
-import { DESIGN_DOC_URL, PROJECT_NAME, REPO_URL } from "@/lib/site";
+import { DESIGN_DOC_URL, POST_URL, PROJECT_NAME, REPO_URL, SITE_URL } from "@/lib/site";
 import { fontVariables } from "./fonts";
 import "./globals.css";
 
@@ -27,6 +27,8 @@ export default function RootLayout({
         <Masthead
           name={PROJECT_NAME}
           titleAs="p"
+          siteUrl={SITE_URL}
+          postUrl={POST_URL}
           dek="An open-source pipeline: speech-to-text, an LLM, and a verifier that checks every quote against the recording."
           stages={[
             { label: "Transcribe" },
