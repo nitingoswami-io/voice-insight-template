@@ -1,71 +1,37 @@
 @import "tailwindcss";
 
+@import "./demo-look.css";
+
 /*
- * Near-monochrome by intent. The only saturated colour in the UI marks a
- * verdict or an interaction, so when something is coloured it means something.
- * Nothing here decorates.
+ * The app's own token names, mapped onto the shared demo-look palette
+ * (src/app/demo-look.css, from the demo-doc skill's assets/live-demo/). Change colours there,
+ * not here. Night edition comes for free: the demo-look tokens switch.
+ *
+ * Newsprint red is rationed (primary action, focus, active stage), so the
+ * app's general "accent" is ink, not red.
  */
-
 :root {
-  --background: #fbfbfa;
-  --surface: #ffffff;
-  --border: #e6e4e0;
-  --border-strong: #d4d1cc;
-  --foreground: #1a1a19;
-  --muted: #6b6a66;
-  --subtle: #92908b;
+  --background: var(--paper);
+  --border: var(--rule-soft);
+  --border-strong: var(--rule);
+  --foreground: var(--ink);
+  --muted: var(--ink-2);
+  --subtle: var(--ink-3);
 
-  --accent: #3d5a80;
-  --accent-soft: #eef2f7;
+  --accent: var(--ink);
+  --accent-soft: var(--paper-2);
 
-  --met: #2f6d4f;
-  --met-soft: #eef5f1;
-  --not-met: #9a3b32;
-  --not-met-soft: #faf0ef;
-  --caution: #8a6410;
-  --caution-soft: #fbf5e8;
+  --met: var(--good);
+  --met-soft: var(--good-soft);
+  --not-met: var(--bad);
+  --not-met-soft: var(--bad-soft);
+  --caution: var(--warn);
+  --caution-soft: var(--warn-soft);
 
-  --highlight: #fdf3d0;
-
-  /* Chart roles. Categorical slots 1 and 2 of the validated palette — blue and
-     orange. Validated against this app's own surfaces: all six checks pass in
-     both modes, worst adjacent CVD ΔE 24.7 light / 26.8 dark (target ≥ 8). */
-  --series-agent: #2a78d6;
-  --series-customer: #eb6834;
-  --chart-grid: #e1e0d9;
-  --chart-axis: #c3c2b7;
-  --chart-track: #f0efec;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #101011;
-    --surface: #17171a;
-    --border: #27272b;
-    --border-strong: #35353a;
-    --foreground: #e9e8e6;
-    --muted: #9b9a96;
-    --subtle: #78776f;
-
-    --accent: #8fb0d3;
-    --accent-soft: #1b2733;
-
-    --met: #7fc0a0;
-    --met-soft: #16241d;
-    --not-met: #e09a92;
-    --not-met-soft: #2a1a18;
-    --caution: #d6b46a;
-    --caution-soft: #262015;
-
-    --highlight: #3a3320;
-
-    /* Same two hues, stepped for the dark surface — not an automatic flip. */
-    --series-agent: #3987e5;
-    --series-customer: #d95926;
-    --chart-grid: #2c2c2a;
-    --chart-axis: #383835;
-    --chart-track: #232326;
-  }
+  /* Chart roles: the validated demo-look series pair (ink blue, ochre). */
+  --series-agent: var(--series-1);
+  --series-customer: var(--series-2);
+  --chart-axis: var(--rule-soft);
 }
 
 @theme inline {
@@ -91,21 +57,27 @@
   --color-chart-axis: var(--chart-axis);
   --color-chart-track: var(--chart-track);
 
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, Menlo, monospace;
+  --font-sans: var(--dl-sans);
+  --font-serif: var(--dl-serif);
+  --font-mono: var(--dl-mono);
+  --font-display: var(--dl-display);
+
+  /* Square corners, as on the paper. rounded-full stays round for dots. */
+  --radius-xs: 1px;
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
+  --radius-xl: 2px;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
+/* Headlines are set in the paper's display face; UI headings stay sans. */
+h1,
+h2 {
+  font-family: var(--dl-display);
+  font-weight: 700;
+  letter-spacing: -0.005em;
 }
 
-/* Tabular figures wherever numbers are compared down a column. */
-.tnum {
-  font-variant-numeric: tabular-nums;
-}
 
 /* Applied to a transcript utterance when its finding is selected. */
 .evidence-active {

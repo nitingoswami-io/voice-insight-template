@@ -324,7 +324,7 @@ export function Analyzer({
               type="button"
               onClick={analyse}
               disabled={!file || working || !!(file && file.size > maxBytes)}
-              className="h-9 rounded-md bg-[var(--foreground)] px-4 text-sm text-[var(--background)] transition-opacity disabled:opacity-35"
+              className="dl-btn dl-btn--primary"
             >
               {working ? "Working…" : "Analyse"}
             </button>

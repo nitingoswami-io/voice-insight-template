@@ -1,6 +1,10 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * A ruled panel in the shared demo-look style (thick top rule, hairline sides,
+ * small-caps title). Same API as before, so callers did not change.
+ */
 export function Panel({
   title,
   description,
@@ -15,21 +19,12 @@ export function Panel({
   className?: string;
 }) {
   return (
-    <section
-      className={cn(
-        "rounded-lg border border-[var(--border)] bg-[var(--surface)]",
-        className,
-      )}
-    >
+    <section className={cn("dl-panel", className)}>
       {(title || action) && (
-        <header className="flex items-start justify-between gap-4 border-b border-[var(--border)] px-5 py-3.5">
+        <header className="dl-panel__head">
           <div>
-            {title && (
-              <h2 className="text-sm font-medium tracking-tight">{title}</h2>
-            )}
-            {description && (
-              <p className="mt-1 text-xs text-[var(--muted)]">{description}</p>
-            )}
+            {title && <h2 className="dl-panel__title">{title}</h2>}
+            {description && <p className="dl-panel__desc">{description}</p>}
           </div>
           {action}
         </header>
