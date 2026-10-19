@@ -18,9 +18,9 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          "This deployment is locked: ACCESS_CODE is not set on the server, so no code can open it.",
+          "No ACCESS_CODE is set on this deployment, so there is nothing to unlock — the demo is already open.",
       },
-      { status: 503 },
+      { status: 409 },
     );
   }
 
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
   return response;
 }
 
-/** Sign out, mostly so a shared laptop can be handed back. */
+/** Sign out, so a shared machine can be locked again. */
 export async function DELETE() {
   const response = NextResponse.json({ ok: true });
   response.cookies.delete(ACCESS_COOKIE);

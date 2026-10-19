@@ -7,12 +7,18 @@ import {
   isValidToken,
   issueToken,
   accessConfigured,
+  publicMaxBytes,
+  publicMode,
   safeNext,
+  uploadLimitFor,
 } from "@/lib/access";
+import { PLATFORM_MAX_BYTES } from "@/lib/limits";
 
 beforeEach(() => {
   vi.stubEnv("ACCESS_CODE", "");
   delete process.env.ACCESS_CODE;
+  vi.stubEnv("PUBLIC_MAX_MB", "");
+  delete process.env.PUBLIC_MAX_MB;
 });
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -22,7 +28,7 @@ const setNodeEnv = (value: string) => vi.stubEnv("NODE_ENV", value);
 const setCode = (value: string) => vi.stubEnv("ACCESS_CODE", value);
 
 describe("isProtectedPath", () => {
-  it("covers the demo and every route that spends money", () => {
+  it("covers the demo and every route that calls a metered API", () => {
     for (const p of [
       "/demo",
       "/demo/anything",
@@ -34,9 +40,9 @@ describe("isProtectedPath", () => {
     }
   });
 
-  it("leaves the shop window open", () => {
-    // Gating these would hide the product from the people it is meant to reach.
-    for (const p of ["/", "/contact", "/api/contact", "/unlock", "/api/access"]) {
+  it("leaves the overview and the unlock flow open", () => {
+    // Gating the unlock route would leave no way in.
+    for (const p of ["/", "/unlock", "/api/access"]) {
       expect(isProtectedPath(p)).toBe(false);
     }
   });
@@ -53,12 +59,18 @@ describe("gateActive", () => {
     expect(gateActive()).toBe(false);
   });
 
-  it("locks in production even with no code set", () => {
-    // The whole point: forgetting to configure the gate must never be the
-    // thing that publishes an unmetered, paid endpoint.
+  it("stays open in production when no code is set — the gate is opt-in", () => {
+    // A fresh fork should work on its first deploy. Setting a code is a
+    // documented step before sharing a public URL.
     setNodeEnv("production");
-    expect(gateActive()).toBe(true);
+    expect(gateActive()).toBe(false);
     expect(accessConfigured()).toBe(false);
+  });
+
+  it("is active in production once a code exists", () => {
+    setNodeEnv("production");
+    setCode("let-me-in-please");
+    expect(gateActive()).toBe(true);
   });
 
   it("is active in development once a code exists", () => {
@@ -160,12 +172,51 @@ describe("safeNext", () => {
 
   it("refuses a same-origin path the gate does not protect", () => {
     // No point bouncing someone to a public page through the unlock flow.
-    expect(safeNext("/contact")).toBe("/demo");
+    expect(safeNext("/unlock")).toBe("/demo");
     expect(safeNext("/")).toBe("/demo");
   });
 
   it("falls back when nothing was given", () => {
     expect(safeNext(null)).toBe("/demo");
     expect(safeNext("")).toBe("/demo");
+  });
+});
+
+describe("public mode", () => {
+  const MB = 1024 * 1024;
+  const setPublic = (value: string) => vi.stubEnv("PUBLIC_MAX_MB", value);
+
+  it("is off by default, with the platform limit for everyone", async () => {
+    expect(publicMode()).toBe(false);
+    expect(await uploadLimitFor(undefined)).toBe(PLATFORM_MAX_BYTES);
+  });
+
+  it("opens the gate even when an access code is set", () => {
+    // The code now lifts the cap instead of guarding the door.
+    setCode("let-me-in-please");
+    setPublic("1.5");
+    expect(publicMode()).toBe(true);
+    expect(gateActive()).toBe(false);
+  });
+
+  it("caps anonymous visitors and lifts the cap for a valid cookie", async () => {
+    setCode("let-me-in-please");
+    setPublic("1.5");
+    expect(await uploadLimitFor(undefined)).toBe(1.5 * MB);
+    expect(await uploadLimitFor("forged-token")).toBe(1.5 * MB);
+    expect(await uploadLimitFor(await issueToken())).toBe(PLATFORM_MAX_BYTES);
+  });
+
+  it("never raises the cap above the platform limit", () => {
+    setPublic("50");
+    expect(publicMaxBytes()).toBe(PLATFORM_MAX_BYTES);
+  });
+
+  it("ignores a value that is not a positive number", () => {
+    // A typo should neither remove the cap silently nor block every upload.
+    for (const bad of ["abc", "0", "-2"]) {
+      setPublic(bad);
+      expect(publicMaxBytes()).toBeNull();
+    }
   });
 });

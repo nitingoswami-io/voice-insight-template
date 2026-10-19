@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 330" role="img" aria-label="Class diagram: run.ts orchestrates one analysis by depending on the prompt, schema, LLM client, verifier and metrics modules, and returns an AnalysisResult; the insight route reaches speech-to-text only through the AsrProvider interface, which assemblyAi implements." class="sketch" font-family="Kalam, 'Segoe Print', 'Comic Sans MS', cursive" font-size="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+<style>/* standalone viewing only — stripped when the figure is inlined into a page */
+svg{color:#17202b} .sk-bg{fill:#ffffff} .sk-fill{fill:#e3f2ef} .sk-accent{stroke:#0f766e} text.sk-accent{fill:#0f766e;stroke:none}
+@media (prefers-color-scheme:dark){svg{color:#e4e9ef} .sk-bg{fill:#161d25} .sk-fill{fill:#15302d} .sk-accent{stroke:#4fd1c0} text.sk-accent{fill:#4fd1c0}}
+</style>
+<defs>
+<filter id="rough" x="-3%" y="-3%" width="106%" height="106%"><feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="10" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G"/></filter>
+<marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M1.5 1.5 L8.5 5 L1.5 8.5" fill="none" stroke="currentColor" stroke-width="1.4"/></marker>
+<marker id="arrow-accent" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="sk-accent" d="M1.5 1.5 L8.5 5 L1.5 8.5" fill="none" stroke="currentColor" stroke-width="1.4"/></marker>
+</defs>
+<g filter="url(#rough)">
+  <rect x="20" y="20" width="200" height="122" rx="4"/>
+  <path d="M20 60 H220"/>
+  <rect x="300" y="20" width="160" height="74" rx="4"/>
+  <path d="M300 48 H460"/>
+  <rect x="490" y="20" width="200" height="56" rx="4" class="sk-accent"/>
+  <path d="M490 48 H690" class="sk-accent"/>
+  <rect x="770" y="20" width="210" height="110" rx="4"/>
+  <path d="M770 48 H980"/>
+  <rect x="20" y="200" width="180" height="92" rx="4"/>
+  <path d="M20 228 H200"/>
+  <path d="M543 76 L110 200" marker-end="url(#arrow)"/>
+  <rect x="215" y="200" width="180" height="92" rx="4"/>
+  <path d="M215 228 H395"/>
+  <path d="M567 76 L305 200" marker-end="url(#arrow)"/>
+  <rect x="410" y="200" width="180" height="74" rx="4" class="sk-accent"/>
+  <path d="M410 228 H590" class="sk-accent"/>
+  <path d="M590 76 L500 200" class="sk-accent" marker-end="url(#arrow-accent)"/>
+  <rect x="605" y="200" width="180" height="110" rx="4"/>
+  <path d="M605 228 H785"/>
+  <path d="M613 76 L695 200" marker-end="url(#arrow)"/>
+  <rect x="800" y="200" width="180" height="74" rx="4"/>
+  <path d="M800 228 H980"/>
+  <path d="M637 76 L890 200" marker-end="url(#arrow)"/>
+  <path d="M300 52 L220 52" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+  <path d="M690 46 L770 46" marker-end="url(#arrow)"/>
+</g>
+<g fill="currentColor" stroke="none">
+  <text x="120.0" y="36" text-anchor="middle" font-size="11">«interface»</text>
+  <text x="120.0" y="52" text-anchor="middle" font-weight="700">AsrProvider</text>
+  <text x="30" y="77" text-anchor="start" font-size="11.5">+upload(audio, type)</text>
+  <text x="30" y="95" text-anchor="start" font-size="11.5">+submit(audioUrl)</text>
+  <text x="30" y="113" text-anchor="start" font-size="11.5">+status(id)</text>
+  <text x="30" y="131" text-anchor="start" font-size="11.5">+fetchResult(id)</text>
+  <text x="380.0" y="39" text-anchor="middle" font-weight="700">assemblyAi</text>
+  <text x="310" y="65" text-anchor="start" font-size="11.5">+name</text>
+  <text x="310" y="83" text-anchor="start" font-size="11.5">-call(path)</text>
+  <text x="590.0" y="39" text-anchor="middle" class="sk-accent" font-weight="700">analysis/run.ts</text>
+  <text x="500" y="65" text-anchor="start" font-size="11.5">+analyseCall(params)</text>
+  <text x="875.0" y="39" text-anchor="middle" font-weight="700">AnalysisResult</text>
+  <text x="780" y="65" text-anchor="start" font-size="11.5">+model</text>
+  <text x="780" y="83" text-anchor="start" font-size="11.5">+insight</text>
+  <text x="780" y="101" text-anchor="start" font-size="11.5">+metrics</text>
+  <text x="780" y="119" text-anchor="start" font-size="11.5">+verification</text>
+  <text x="110.0" y="219" text-anchor="middle" font-weight="700">analysis/prompt.ts</text>
+  <text x="30" y="245" text-anchor="start" font-size="11.5">+SYSTEM_PROMPT</text>
+  <text x="30" y="263" text-anchor="start" font-size="11.5">+formatTranscript()</text>
+  <text x="30" y="281" text-anchor="start" font-size="11.5">+buildUserPrompt()</text>
+  <rect class="sk-bg" x="281" y="132" width="48" height="17" rx="3"/>
+  <text x="305" y="144" text-anchor="middle" font-size="12">builds</text>
+  <text x="305.0" y="219" text-anchor="middle" font-weight="700">analysis/schema.ts</text>
+  <text x="225" y="245" text-anchor="start" font-size="11.5">+insightSchema</text>
+  <text x="225" y="263" text-anchor="start" font-size="11.5">+insightJsonSchema()</text>
+  <text x="225" y="281" text-anchor="start" font-size="11.5">+toInsight(raw)</text>
+  <rect class="sk-bg" x="389" y="132" width="68" height="17" rx="3"/>
+  <text x="423" y="144" text-anchor="middle" font-size="12">validates</text>
+  <text x="500.0" y="219" text-anchor="middle" class="sk-accent" font-weight="700">providers/llm.ts</text>
+  <text x="420" y="245" text-anchor="start" font-size="11.5">+structuredCall(params)</text>
+  <text x="420" y="263" text-anchor="start" font-size="11.5">-getClient()</text>
+  <rect class="sk-bg" x="519" y="132" width="42" height="17" rx="3"/>
+  <text x="540" y="144" text-anchor="middle" class="sk-accent" font-size="12">calls</text>
+  <text x="695.0" y="219" text-anchor="middle" font-weight="700">verify.ts</text>
+  <text x="615" y="245" text-anchor="start" font-size="11.5">+normalize(text)</text>
+  <text x="615" y="263" text-anchor="start" font-size="11.5">+locateQuote()</text>
+  <text x="615" y="281" text-anchor="start" font-size="11.5">+verifyPoints()</text>
+  <text x="615" y="299" text-anchor="start" font-size="11.5">+combineStats()</text>
+  <rect class="sk-bg" x="634" y="132" width="48" height="17" rx="3"/>
+  <text x="658" y="144" text-anchor="middle" font-size="12">checks</text>
+  <text x="890.0" y="219" text-anchor="middle" font-weight="700">metrics.ts</text>
+  <text x="810" y="245" text-anchor="start" font-size="11.5">+computeMetrics()</text>
+  <text x="810" y="263" text-anchor="start" font-size="11.5">+guessAgentSpeaker()</text>
+  <rect class="sk-bg" x="745" y="132" width="62" height="17" rx="3"/>
+  <text x="776" y="144" text-anchor="middle" font-size="12">measures</text>
+  <rect class="sk-bg" x="222" y="32" width="75" height="17" rx="3"/>
+  <text x="260" y="44" text-anchor="middle" font-size="12">implements</text>
+  <rect class="sk-bg" x="702" y="26" width="55" height="17" rx="3"/>
+  <text x="730" y="38" text-anchor="middle" font-size="12">returns</text>
+</g>
+</svg>

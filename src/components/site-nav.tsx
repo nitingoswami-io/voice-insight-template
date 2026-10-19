@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { CONTACT_ENABLED } from "@/lib/site";
+import { PROJECT_NAME, REPO_URL } from "@/lib/site";
 
 /** Five bars suggesting a waveform. Decorative — the wordmark carries the name. */
 function Wordmark() {
@@ -24,17 +24,20 @@ function Wordmark() {
         ))}
       </span>
       <span className="text-[17px] font-semibold tracking-tight">
-        Lisn<span className="text-[var(--series-agent)]">10</span>
+        {PROJECT_NAME}
+      </span>
+      <span className="rounded border border-[var(--border)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--muted)]">
+        template
       </span>
     </span>
   );
 }
 
 const LINKS = [
-  { href: "/#capabilities", label: "Capabilities" },
-  { href: "/#how", label: "How it works" },
-  { href: "/#evidence", label: "Evidence" },
-  ...(CONTACT_ENABLED ? [{ href: "/contact", label: "Contact" }] : []),
+  { href: "/#pipeline", label: "Pipeline" },
+  { href: "/#concepts", label: "Concepts" },
+  { href: "/#verification", label: "Verification" },
+  { href: "/#build", label: "Build your own" },
 ];
 
 export function SiteNav() {
@@ -44,7 +47,7 @@ export function SiteNav() {
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--background)]/85 backdrop-blur-md">
       <div className="mx-auto flex w-full max-w-6xl items-center gap-6 px-6 py-3">
-        <Link href="/" aria-label="Lisn10 home">
+        <Link href="/" aria-label={`${PROJECT_NAME} home`}>
           <Wordmark />
         </Link>
 
@@ -60,16 +63,23 @@ export function SiteNav() {
           ))}
         </nav>
 
+        <a
+          href={REPO_URL}
+          className="ml-auto text-sm text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
+        >
+          GitHub
+        </a>
+
         <Link
           href="/demo"
           className={cn(
-            "ml-auto rounded-md px-3.5 py-1.5 text-sm transition-opacity",
+            "rounded-md px-3.5 py-1.5 text-sm transition-opacity",
             onDemo
               ? "border border-[var(--border-strong)] text-[var(--muted)]"
               : "bg-[var(--foreground)] text-[var(--background)] hover:opacity-90",
           )}
         >
-          {onDemo ? "Demo" : "Try the demo"}
+          {onDemo ? "Demo" : "Run the demo"}
         </Link>
       </div>
     </header>

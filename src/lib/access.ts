@@ -1,26 +1,33 @@
 /**
- * Access gate for the paid routes.
+ * Optional access gate for the routes that call metered APIs.
  *
- * `/api/transcribe` and `/api/insight` each spend real money at two providers,
- * and a demo link handed to a prospect gets forwarded. Without a gate the URL is
- * an endpoint that will transcribe anything anyone uploads, billed to us.
+ * `/api/transcribe` and `/api/insight` spend credit on your AssemblyAI and xAI
+ * accounts. Run locally, that is fine. Deploy a fork to a public URL and anyone
+ * who finds it can spend your credit. Setting `ACCESS_CODE` puts a shared code
+ * in front of those routes; leaving it unset keeps everything open.
  *
- * The landing page and contact form stay public deliberately — the gate covers
- * the routes that cost something, not the shop window.
+ * The landing page stays public either way — the gate covers only the routes
+ * that cost something.
  *
- * Built on Web Crypto rather than `node:crypto` so the same module works in
- * middleware (Edge runtime) and in route handlers (Node).
+ * Public mode (`PUBLIC_MAX_MB`) is the middle ground for a hosted demo: the
+ * routes are open to everyone, but uploads are capped at that size. A valid
+ * access cookie lifts the cap back to the platform limit.
+ *
+ * Built on Web Crypto rather than `node:crypto` so the module stays portable
+ * across runtimes — the proxy and the route handlers both import it.
  */
 
-export const ACCESS_COOKIE = "lisn10_access";
+import { PLATFORM_MAX_BYTES } from "@/lib/limits";
+
+export const ACCESS_COOKIE = "voice_insight_access";
 
 /** Signed payload. Bumping this invalidates every issued cookie at once. */
-const PAYLOAD = "lisn10-access-v1";
+const PAYLOAD = "voice-insight-access-v1";
 
-/** Seven days: long enough for a sales cycle, short enough to expire a leak. */
+/** Seven days: long enough to be convenient, short enough to expire a leak. */
 export const ACCESS_MAX_AGE = 60 * 60 * 24 * 7;
 
-/** Paths the gate protects. Everything else is public. */
+/** Paths the gate protects when it is on. Everything else is public. */
 export const PROTECTED_PREFIXES = [
   "/demo",
   "/api/transcribe",
@@ -34,13 +41,7 @@ export function isProtectedPath(pathname: string): boolean {
   );
 }
 
-/**
- * Whether a gate is configured.
- *
- * In production an unset code is treated as "locked", not "open": forgetting to
- * set it on the host must never be the thing that publishes an unmetered
- * endpoint. Locally it stays open so `npm run dev` needs no ceremony.
- */
+/** Whether an access code is configured. */
 export function accessConfigured(): boolean {
   return Boolean(process.env.ACCESS_CODE);
 }
@@ -65,8 +66,42 @@ export function safeNext(next: string | null | undefined): string {
   return isProtectedPath(path) ? next : "/demo";
 }
 
+/**
+ * Whether the gate is on.
+ *
+ * Opt-in: on exactly when `ACCESS_CODE` is set, in any environment. A fresh
+ * fork works on first deploy; set a code before sharing a public URL.
+ */
 export function gateActive(): boolean {
-  return accessConfigured() || process.env.NODE_ENV === "production";
+  return accessConfigured() && !publicMode();
+}
+
+/**
+ * The public upload cap in bytes, or null when public mode is off.
+ *
+ * Never above the platform limit, and ignored when the value is not a positive
+ * number — a typo should not silently remove the cap or block every upload.
+ */
+export function publicMaxBytes(): number | null {
+  const raw = process.env.PUBLIC_MAX_MB;
+  if (!raw) return null;
+  const mb = Number(raw);
+  if (!Number.isFinite(mb) || mb <= 0) return null;
+  return Math.min(Math.round(mb * 1024 * 1024), PLATFORM_MAX_BYTES);
+}
+
+/** Whether the demo is open to everyone with a capped upload size. */
+export function publicMode(): boolean {
+  return publicMaxBytes() !== null;
+}
+
+/** The largest upload this visitor may send, given their access cookie. */
+export async function uploadLimitFor(
+  token: string | undefined | null,
+): Promise<number> {
+  const cap = publicMaxBytes();
+  if (cap === null) return PLATFORM_MAX_BYTES;
+  return (await isValidToken(token)) ? PLATFORM_MAX_BYTES : cap;
 }
 
 function toBase64Url(bytes: ArrayBuffer): string {

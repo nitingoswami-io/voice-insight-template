@@ -100,7 +100,7 @@ describe("Analyzer", () => {
   });
 
   it("keeps the sample honest: every quote really is in the transcript", () => {
-    // A sample that broke the product's own premise would be worse than none.
+    // A sample that broke the pipeline's own premise would be worse than none.
     const haystack = normalize(SAMPLE_UTTERANCES.map((u) => u.text).join(" "));
     for (const item of [...SAMPLE_INSIGHT.strengths, ...SAMPLE_INSIGHT.coaching]) {
       expect(haystack).toContain(normalize(item.quote.quoteOriginal));

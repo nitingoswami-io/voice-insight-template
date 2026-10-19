@@ -173,7 +173,7 @@ export function computeMetrics(
  * Guess which diarized label is the agent: on an inbound support call the agent
  * almost always speaks first, delivering the greeting.
  *
- * This is a heuristic and is exposed to the user as a one-click correction. A
+ * This is a heuristic, and the UI says so next to the timeline. A
  * stereo recording with agent and customer on separate channels removes the
  * guess entirely and should be preferred where the telephony platform offers it.
  */

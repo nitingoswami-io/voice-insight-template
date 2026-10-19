@@ -40,7 +40,7 @@ export function formatTranscript(
     .join("\n");
 }
 
-export const SYSTEM_PROMPT = `You are a quality analyst reviewing a customer support call for a BPO. You produce a short, useful read of the call for the agent's team leader.
+export const SYSTEM_PROMPT = `You are a quality analyst reviewing a recorded customer support call from a contact centre. You produce a short, useful read of the call for the agent's team leader.
 
 You will be given a transcript in its original language. Judge it in that language — do not translate it before reasoning about it, because politeness registers and code-switching are part of what you are assessing.
 

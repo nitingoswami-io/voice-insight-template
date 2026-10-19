@@ -10,7 +10,7 @@ import type { Insight, VerificationStats } from "@/lib/analysis/types";
  * the two be confused.
  *
  * Deliberately self-consistent: every quote below appears verbatim in the
- * transcript, because a sample that violated the product's own premise would be
+ * transcript, because a sample that violated the pipeline's own premise would be
  * worse than no sample. The one discarded claim is included to show what the
  * verifier does when the model invents something.
  */

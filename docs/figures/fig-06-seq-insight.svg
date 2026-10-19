@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-label="Sequence: /api/insight fetches the finished transcript, guesses the agent speaker, and calls analyseCall, which builds the prompt, gets structured JSON from the LLM, validates it with zod, verifies every quote against the words, and computes metrics before returning." class="sketch" font-family="Kalam, 'Segoe Print', 'Comic Sans MS', cursive" font-size="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+<style>/* standalone viewing only — stripped when the figure is inlined into a page */
+svg{color:#17202b} .sk-bg{fill:#ffffff} .sk-fill{fill:#e3f2ef} .sk-accent{stroke:#0f766e} text.sk-accent{fill:#0f766e;stroke:none}
+@media (prefers-color-scheme:dark){svg{color:#e4e9ef} .sk-bg{fill:#161d25} .sk-fill{fill:#15302d} .sk-accent{stroke:#4fd1c0} text.sk-accent{fill:#4fd1c0}}
+</style>
+<defs>
+<filter id="rough" x="-3%" y="-3%" width="106%" height="106%"><feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G"/></filter>
+<marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M1.5 1.5 L8.5 5 L1.5 8.5" fill="none" stroke="currentColor" stroke-width="1.4"/></marker>
+<marker id="arrow-accent" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="sk-accent" d="M1.5 1.5 L8.5 5 L1.5 8.5" fill="none" stroke="currentColor" stroke-width="1.4"/></marker>
+</defs>
+<g filter="url(#rough)">
+  <rect x="28.0" y="24" width="84" height="34" rx="6"/>
+  <path d="M70 58 V600" stroke-dasharray="3 6" stroke-width="1"/>
+  <rect x="168.0" y="24" width="104" height="34" rx="6"/>
+  <path d="M220 58 V600" stroke-dasharray="3 6" stroke-width="1"/>
+  <rect x="324.5" y="24" width="91" height="34" rx="6"/>
+  <path d="M370 58 V600" stroke-dasharray="3 6" stroke-width="1"/>
+  <rect x="478.0" y="24" width="84" height="34" rx="6"/>
+  <path d="M520 58 V600" stroke-dasharray="3 6" stroke-width="1"/>
+  <rect x="621.0" y="24" width="118" height="34" rx="6"/>
+  <path d="M680 58 V600" stroke-dasharray="3 6" stroke-width="1"/>
+  <rect x="788.0" y="24" width="84" height="34" rx="6"/>
+  <path d="M830 58 V600" stroke-dasharray="3 6" stroke-width="1"/>
+  <path d="M74 100 L216 100" marker-end="url(#arrow)"/>
+  <path d="M224 130 L366 130" marker-end="url(#arrow)"/>
+  <path d="M366 160 L224 160" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+  <path d="M220 186 L246 186 L246 198 L223 198" marker-end="url(#arrow)"/>
+  <path d="M224 226 L516 226" marker-end="url(#arrow)"/>
+  <path d="M520 252 L546 252 L546 264 L523 264" marker-end="url(#arrow)"/>
+  <path d="M524 292 L676 292" class="sk-accent" marker-end="url(#arrow-accent)"/>
+  <path d="M676 322 L524 322" class="sk-accent" stroke-dasharray="6 5" marker-end="url(#arrow-accent)"/>
+  <path d="M520 348 L546 348 L546 360 L523 360" class="sk-accent" marker-end="url(#arrow-accent)"/>
+  <path d="M524 388 L826 388" class="sk-accent" marker-end="url(#arrow-accent)"/>
+  <path d="M826 418 L524 418" class="sk-accent" stroke-dasharray="6 5" marker-end="url(#arrow-accent)"/>
+  <path d="M520 444 L546 444 L546 456 L523 456" marker-end="url(#arrow)"/>
+  <path d="M516 484 L224 484" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+  <path d="M216 514 L74 514" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+</g>
+<g fill="currentColor" stroke="none">
+  <text x="70.0" y="46.0" text-anchor="middle">Analyzer</text>
+  <text x="220.0" y="46.0" text-anchor="middle">/api/insight</text>
+  <text x="370.0" y="46.0" text-anchor="middle">AssemblyAI</text>
+  <text x="520.0" y="46.0" text-anchor="middle">run.ts</text>
+  <text x="680.0" y="46.0" text-anchor="middle">xAI · grok-4.5</text>
+  <text x="830.0" y="46.0" text-anchor="middle">verify.ts</text>
+  <rect class="sk-bg" x="94" y="81" width="102" height="17" rx="3"/>
+  <text x="145.0" y="93" text-anchor="middle" font-size="12">1  POST { id }</text>
+  <rect class="sk-bg" x="230" y="111" width="129" height="17" rx="3"/>
+  <text x="295.0" y="123" text-anchor="middle" font-size="12">2  fetchResult(id)</text>
+  <rect class="sk-bg" x="220" y="141" width="149" height="17" rx="3"/>
+  <text x="295.0" y="153" text-anchor="middle" font-size="12">3  words · utterances</text>
+  <text x="254" y="196" text-anchor="start" font-size="12">4  guessAgentSpeaker</text>
+  <rect class="sk-bg" x="309" y="207" width="122" height="17" rx="3"/>
+  <text x="370.0" y="219" text-anchor="middle" font-size="12">5  analyseCall(…)</text>
+  <text x="554" y="262" text-anchor="start" font-size="12">6  rubric + rules + transcript</text>
+  <rect class="sk-bg" x="532" y="273" width="135" height="17" rx="3"/>
+  <text x="600.0" y="285" text-anchor="middle" class="sk-accent" font-size="12">7  chat.completions</text>
+  <rect class="sk-bg" x="546" y="303" width="108" height="17" rx="3"/>
+  <text x="600.0" y="315" text-anchor="middle" class="sk-accent" font-size="12">8  JSON insight</text>
+  <text x="554" y="358" text-anchor="start" class="sk-accent" font-size="12">9  zod safeParse</text>
+  <rect class="sk-bg" x="618" y="369" width="115" height="17" rx="3"/>
+  <text x="675.0" y="381" text-anchor="middle" class="sk-accent" font-size="12">10  verifyPoints</text>
+  <rect class="sk-bg" x="610" y="399" width="129" height="17" rx="3"/>
+  <text x="675.0" y="411" text-anchor="middle" class="sk-accent" font-size="12">11  kept + dropped</text>
+  <text x="554" y="454" text-anchor="start" font-size="12">12  computeMetrics</text>
+  <rect class="sk-bg" x="269" y="465" width="202" height="17" rx="3"/>
+  <text x="370.0" y="477" text-anchor="middle" font-size="12">13  insight · metrics · stats</text>
+  <rect class="sk-bg" x="74" y="495" width="142" height="17" rx="3"/>
+  <text x="145.0" y="507" text-anchor="middle" font-size="12">14  200 + transcript</text>
+</g>
+</svg>

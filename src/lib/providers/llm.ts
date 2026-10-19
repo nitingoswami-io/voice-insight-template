@@ -6,8 +6,8 @@ import { env } from "@/lib/env";
  *
  * xAI exposes an OpenAI-compatible surface, so the official OpenAI SDK works
  * against `api.x.ai/v1`. Kept behind this module so a self-hosted open-weight
- * endpoint (vLLM speaks the same protocol) is a base-URL change for clients
- * whose contracts forbid sending transcripts to a third party.
+ * endpoint (vLLM speaks the same protocol) is a base-URL change — useful when
+ * transcripts must not leave your own infrastructure.
  */
 
 let client: OpenAI | null = null;

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 300" role="img" aria-label="State diagram for the Analyzer panel: idle, uploading, transcribing, analyzing and done; any error returns to idle with a message, and the sample output jumps straight to done without calling an API." class="sketch" font-family="Kalam, 'Segoe Print', 'Comic Sans MS', cursive" font-size="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+<style>/* standalone viewing only — stripped when the figure is inlined into a page */
+svg{color:#17202b} .sk-bg{fill:#ffffff} .sk-fill{fill:#e3f2ef} .sk-accent{stroke:#0f766e} text.sk-accent{fill:#0f766e;stroke:none}
+@media (prefers-color-scheme:dark){svg{color:#e4e9ef} .sk-bg{fill:#161d25} .sk-fill{fill:#15302d} .sk-accent{stroke:#4fd1c0} text.sk-accent{fill:#4fd1c0}}
+</style>
+<defs>
+<filter id="rough" x="-3%" y="-3%" width="106%" height="106%"><feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="9" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G"/></filter>
+<marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M1.5 1.5 L8.5 5 L1.5 8.5" fill="none" stroke="currentColor" stroke-width="1.4"/></marker>
+<marker id="arrow-accent" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="sk-accent" d="M1.5 1.5 L8.5 5 L1.5 8.5" fill="none" stroke="currentColor" stroke-width="1.4"/></marker>
+</defs>
+<g filter="url(#rough)">
+  <rect x="40" y="116" width="100" height="48" rx="18"/>
+  <rect x="200" y="116" width="120" height="48" rx="18"/>
+  <rect x="380" y="116" width="130" height="48" rx="18"/>
+  <rect x="570" y="116" width="120" height="48" rx="18"/>
+  <rect x="750" y="116" width="90" height="48" rx="18" class="sk-accent"/>
+  <path d="M30 140 L40 140" marker-end="url(#arrow)"/>
+  <path d="M140 140 L200 140" class="sk-accent" marker-end="url(#arrow-accent)"/>
+  <path d="M320 140 L380 140" class="sk-accent" marker-end="url(#arrow-accent)"/>
+  <path d="M510 140 L570 140" class="sk-accent" marker-end="url(#arrow-accent)"/>
+  <path d="M690 140 L750 140" class="sk-accent" marker-end="url(#arrow-accent)"/>
+  <path d="M90 116 V60 H795 V116" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+  <path d="M260 164 V230"/>
+  <path d="M445 164 V230"/>
+  <path d="M630 164 V230 H90 V164" marker-end="url(#arrow)"/>
+  <path d="M795 164 V270 H70 V164" marker-end="url(#arrow)"/>
+</g>
+<g fill="currentColor" stroke="none">
+  <circle cx="24" cy="140" r="6"/>
+  <text x="90.0" y="145.0" text-anchor="middle">idle</text>
+  <text x="260.0" y="145.0" text-anchor="middle">uploading</text>
+  <text x="445.0" y="145.0" text-anchor="middle">transcribing</text>
+  <text x="630.0" y="145.0" text-anchor="middle">analyzing</text>
+  <text x="795.0" y="145.0" text-anchor="middle" class="sk-accent">done</text>
+  <rect class="sk-bg" x="142" y="120" width="55" height="17" rx="3"/>
+  <text x="170" y="132" text-anchor="middle" class="sk-accent" font-size="12">Analyse</text>
+  <rect class="sk-bg" x="326" y="120" width="48" height="17" rx="3"/>
+  <text x="350" y="132" text-anchor="middle" class="sk-accent" font-size="12">job id</text>
+  <rect class="sk-bg" x="519" y="120" width="42" height="17" rx="3"/>
+  <text x="540" y="132" text-anchor="middle" class="sk-accent" font-size="12">ready</text>
+  <rect class="sk-bg" x="696" y="120" width="48" height="17" rx="3"/>
+  <text x="720" y="132" text-anchor="middle" class="sk-accent" font-size="12">200 OK</text>
+  <rect class="sk-bg" x="329" y="52" width="222" height="17" rx="3"/>
+  <text x="440" y="64" text-anchor="middle" font-size="12">View sample output · no API call</text>
+  <rect class="sk-bg" x="286" y="226" width="149" height="17" rx="3"/>
+  <text x="360" y="238" text-anchor="middle" font-size="12">error · message shown</text>
+  <rect class="sk-bg" x="372" y="266" width="135" height="17" rx="3"/>
+  <text x="440" y="278" text-anchor="middle" font-size="12">choose another file</text>
+</g>
+</svg>

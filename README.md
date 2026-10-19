@@ -1,35 +1,86 @@
-# Lisn10 — prototype
+# Voice Insight Template
 
-Upload a support call recording. Get a transcript with speakers separated and a
-short read of the call — what the customer wanted, what went well, what to coach
-— where **every observation carries the quote that backs it**. Click a quote and
-the audio jumps to it.
+An open-source, MIT-licensed reference pipeline for turning **recorded speech
+into grounded LLM insight**: speech-to-text, deterministic metrics, structured
+LLM inference, and a verification step that checks every model claim against
+the transcript before it is shown.
 
-No database, no storage bucket, nothing to provision. A landing page at `/`, the
-analyser at `/demo` behind an access code, and a contact form at `/contact`.
+The worked example is **call-centre quality review**. Upload a support call and
+you get a transcript with the speakers separated, plus a short assessment —
+what went well, what to coach — where **every observation carries the verbatim
+quote that backs it**. Click a quote and the audio jumps to that moment.
+
+**Live demo:** [lisn10.vercel.app](https://lisn10.vercel.app) — click
+**View sample output** on `/demo` for a free walkthrough, or upload a short
+clip (the public demo caps file size to keep API costs bounded).
+
+It is meant to be read, run and forked. Swap the rubric and the prompt, and the
+same pipeline can review sales calls, interviews, lectures or clinic visits.
+
+> **Status:** learning template and proof of concept. Not hardened for
+> production — see [Known limits](#known-limits).
+
+![Pipeline: a call recording is transcribed by AssemblyAI, the LLM judges the transcript with quotes, and a verifier checks every quote against the transcript's words before the results page shows it. Deterministic metrics come from the same words with no model.](docs/figures/fig-02-pipeline.svg)
+
+*The pipeline. Speech-to-text turns audio into words with speakers and
+timings. The LLM (`grok-4.5`, JSON-schema output) proposes claims, each with a
+quote. The verifier checks every quote against the word stream and keeps only
+grounded claims. Talk share and silence are counted from the same words with no
+model. The teal path is the LLM and verification path.*
 
 ---
 
-## Running it
+## What you can learn from it
+
+- **Provider-agnostic ASR.** A four-method interface wraps AssemblyAI, with
+  language detection, diarization, per-word timings and confidence.
+- **Measured vs judged.** Talk share, silence and interruptions are computed
+  from the audio with no model involved, and are labelled separately from
+  model opinions.
+- **Structured LLM output.** A zod schema becomes a JSON Schema for the model's
+  structured-output mode, with a rubric defined as data.
+- **Treating the model as untrusted.** Every quote is located in the real
+  transcript, at about the claimed time, from the claimed speaker. Anything
+  that fails is dropped and counted.
+- **Multilingual without pre-translation.** The model reads the call in the
+  language it was spoken, and normalisation keeps Indic vowel signs intact.
+- **Zero infrastructure.** No database, storage bucket, queue or webhook — just
+  two API keys.
+
+The full walkthrough is in **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**,
+and the design document with sequence, state, class and data diagrams is in
+**[docs/DESIGN.md](docs/DESIGN.md)**.
+
+---
+
+## Quick start
+
+Requires Node.js 20.9 or later.
 
 ```bash
+git clone https://github.com/nitingoswami-io/voice-insight-template.git
+cd voice-insight-template
 npm install
-cp .env.example .env.local     # fill in the keys
-npm run dev
+cp .env.example .env.local     # add your two API keys
+npm run dev                    # http://localhost:3000
 ```
 
-Two keys are needed for the pipeline: [AssemblyAI](https://www.assemblyai.com/dashboard)
-(transcription) and [xAI](https://console.x.ai) (analysis). Both have free
-credit. `BREVO_API_KEY` is only needed if you want the contact form to deliver,
-and `ACCESS_CODE` is optional locally — see *Deploying* below.
+You need two keys, and both providers offer free credit:
+
+| Variable | Used for | Get one |
+|---|---|---|
+| `ASSEMBLYAI_API_KEY` | Transcription, language detection, diarization | [assemblyai.com](https://www.assemblyai.com/dashboard) |
+| `XAI_API_KEY` | LLM analysis | [console.x.ai](https://console.x.ai) |
+
+No keys? Open `/demo` and click **View sample output** to explore the UI with a
+built-in example. No API is called.
 
 ```bash
-npm test        # 124 tests, no network or credentials needed
+npm test          # runs offline, no keys needed
+npm run typecheck
+npm run lint
 npm run build
 ```
-
-The demo has been run end to end against the live APIs; the timings and costs
-quoted here come from real runs, not estimates.
 
 ---
 
@@ -39,126 +90,126 @@ quoted here come from real runs, not estimates.
 Browser
  ├─ POST /api/transcribe   audio bytes → AssemblyAI, returns a job id     ~2s
  ├─ GET  /api/status?id=   poll every 3s                                  30-60s
- └─ POST /api/insight      fetch transcript → Grok → verify quotes        ~20s
+ └─ POST /api/insight      fetch transcript → metrics → LLM → verify      ~20s
 ```
 
-Two deliberate choices keep this free of infrastructure:
+| Stage | Where |
+|---|---|
+| Speech-to-text | `src/lib/providers/asr.ts`, `asr-assemblyai.ts` |
+| Deterministic metrics | `src/lib/metrics.ts` |
+| Rubric | `src/lib/quality-guide.ts` |
+| Prompt and schema | `src/lib/analysis/prompt.ts`, `schema.ts` |
+| Orchestration | `src/lib/analysis/run.ts` |
+| Quote verification | `src/lib/verify.ts` |
+| UI | `src/components/analyzer.tsx`, `src/components/charts/` |
 
-**No storage service.** Audio is relayed through the API route to AssemblyAI's
-own upload endpoint, which holds it long enough to transcribe. For playback the
-browser uses `URL.createObjectURL(file)` on the file it already has — so
-click-to-seek works with nothing stored anywhere.
+**Stack:** Next.js 16 (App Router) · AssemblyAI · xAI `grok-4.5` through the
+OpenAI-compatible API · zod · Tailwind CSS 4 · Vitest.
 
-**No database.** The browser holds the transcript id between polls, so the
-server is stateless. Nothing needs persisting for a single session.
+On real 10-minute calls, a run takes about 50 seconds and costs about US$0.05 in
+API usage (~$0.03 transcription, ~$0.02 analysis).
 
-**No webhook.** Polling instead of a callback means no public URL, no shared
-secret, and no ngrok tunnel in development. Every request stays short, so
-serverless duration limits never come into play.
+### The part most worth reading: `src/lib/verify.ts`
 
-**Stack:** Next.js 16 on Vercel · AssemblyAI (99 languages, diarization,
-per-word confidence) · xAI `grok-4.5` with JSON-schema structured outputs.
+Before any observation reaches the page, its quote must be found in the actual
+transcript (fuzzy-matched), at roughly the claimed time (±5 s), and attributed
+to the claimed speaker. Failures are **dropped and counted**, and the count is
+shown under "Provenance". If nothing survives, no score is shown.
 
----
-
-## The part worth reading: `src/lib/verify.ts`
-
-The model's output is treated as untrusted. Before any observation reaches the
-page, its quote must be located in the actual transcript, at roughly the claimed
-time, attributed to the claimed speaker. Anything that fails is **dropped and
-counted**, and the count is shown on the page under "Provenance".
-
-It matters for a demo more than it sounds: the first thing anyone does with a
-tool like this is spot-check one quote. Quotes are also snapped to the
-transcript's own timings, so the player always lands on the real moment rather
-than where the model guessed.
-
-Two details in there:
+Two details:
 
 - **Nearest-occurrence matching.** "Yes" may occur forty times in a call; the
-  timestamp is the only thing distinguishing the one the model meant from a
-  fabrication.
-- **`normalize()` strips Latin diacritics but preserves Indic combining marks.**
+  timestamp is what tells the one the model meant apart from an invented one.
+- **`normalize()` strips Latin diacritics but keeps Indic combining marks.**
   The usual NFD-and-drop-all-marks trick would collapse का, कि and की to क —
-  silently defeating the verifier on exactly the languages this is for.
-
-### Multilingual: no pre-translation
-
-The transcript goes to Grok in the language it was spoken. Translating first
-would destroy what's being assessed — Hindi's आप/तू, Spanish's usted/tú, the
-moment a frustrated customer switches out of English — and would move the quotes
-we verify into a machine translation rather than what was actually said. English
-glosses appear only under each quote, where they came back alongside the
-observation.
+  silently breaking verification on exactly the languages this handles.
 
 ---
 
-## Deploying
+## Adapting it
 
-Live at **https://lisn10.vercel.app**.
-
-The GitHub repository is connected to Vercel, so **pushing to `main` deploys to
-production** and any other branch gets a preview URL.
-
-> **Do not also run `vercel deploy --prod`.** Both paths are live, and a manual
-> deploy races the Git-triggered one for the production alias — whichever
-> finishes last wins, which makes it look as though configuration changed by
-> itself. Push, and let the integration deploy.
-
-Six environment variables, set in the Vercel dashboard rather than the repo:
-
-| Variable | Purpose |
+| You want to… | Change |
 |---|---|
-| `ACCESS_CODE` | Unlocks `/demo` and the paid API routes |
-| `ASSEMBLYAI_API_KEY` | Transcription, language detection, diarization |
-| `XAI_API_KEY` | Analysis |
-| `BREVO_API_KEY` | Contact-form delivery |
-| `CONTACT_TO_EMAIL` | Where enquiries land |
-| `CONTACT_FROM_EMAIL` | Sender — must be verified in Brevo |
-
-Changing one takes effect on the next deployment, not immediately. To rotate a
-value, prefer `vercel env rm <NAME> production` followed by `vercel env add`:
-`--force` on an existing variable has not been reliable here.
-
-Per-deployment URLs (`lisn10-<hash>-…vercel.app`) sit behind Vercel's own
-deployment protection and return 401 to anyone outside the team. Share the
-`lisn10.vercel.app` alias, never a deployment URL.
+| Assess a different kind of conversation | `src/lib/quality-guide.ts` and `SYSTEM_PROMPT` in `src/lib/analysis/prompt.ts` |
+| Use another speech-to-text service | Implement `AsrProvider` and switch the import in `src/app/api/*/route.ts` |
+| Use another LLM | Set `XAI_BASE_URL` and `XAI_MODEL` for any OpenAI-compatible server (including self-hosted vLLM) |
+| Handle longer files | Add object storage with signed client uploads |
+| Keep history | Persist the `/api/insight` response in a database |
 
 ---
 
-## Tests
+## Deploying your own copy
 
-`src/lib/verify.test.ts` asserts that a fabricated quote, a real quote at a
-fabricated timestamp, and a real quote attributed to the wrong speaker are all
-discarded — plus that Devanagari and Tamil vowel signs survive normalisation and
-Hinglish code-switched evidence verifies.
+The app deploys to Vercel (or any Next.js host) with no extra configuration.
+Add the environment variables in your host's dashboard:
 
-`src/lib/analysis/run.test.ts` runs the same guard through the whole chain with
-the model mocked: a response mixing one grounded observation with one invented
-one must yield only the grounded one.
+| Variable | Required | Purpose |
+|---|---|---|
+| `ASSEMBLYAI_API_KEY` | yes | Transcription |
+| `XAI_API_KEY` | yes | Analysis |
+| `ACCESS_CODE` | recommended for public URLs | Puts a shared code in front of `/demo` and the API routes |
+| `PUBLIC_MAX_MB` | no | Public mode: open to everyone, uploads capped at this size |
+| `XAI_MODEL`, `XAI_BASE_URL` | no | Model and endpoint override |
+
+**Set `ACCESS_CODE` before you share a public URL.** Without it, anyone who
+finds the deployment can spend your API credit. The gate is off by default so a
+fresh fork works on first deploy. Use a long random value, for example
+`openssl rand -base64 24`.
+
+| `ACCESS_CODE` | `PUBLIC_MAX_MB` | Result |
+|---|---|---|
+| unset | unset | Open to everyone, 4.5 MB uploads (local development) |
+| set | unset | Private: `/demo` and the API need the code |
+| set | set | Public demo: open to everyone, capped uploads; the code lifts the cap |
+| unset | set | Open to everyone, capped uploads for all |
+
+### Running a public demo with a spending limit
+
+Each run spends real API credit, so a public demo needs a ceiling. Three layers,
+from most to least important:
+
+1. **Hard cap at the providers.** Use prepaid credit with auto-recharge turned
+   off on AssemblyAI and xAI. This bounds the worst case whatever else fails.
+2. **Per-visitor rate limit.** Add Vercel Firewall rules on `POST
+   /api/transcribe` and `POST /api/insight` (for example 3 per IP per hour),
+   plus a looser one on `GET /api/status`, which the browser polls every 3 s.
+   Blocked requests are not billed. Counters are per region, so the effective
+   limit is somewhat looser than configured. Roll the rules out in `log` mode
+   first and check the firewall dashboard before enforcing.
+3. **Shorter files.** Set `PUBLIC_MAX_MB` (for example `1.5`, a few minutes of
+   compressed audio) so each run costs a cent or two. The server enforces it;
+   the browser checks it too, so oversized files fail instantly.
+
+"View sample output" on `/demo` costs nothing at all: no API is called.
+
+On Vercel, environment-variable changes take effect on the next deployment. If
+the repository is connected to Vercel, pushing to `main` already deploys
+production — avoid also running `vercel deploy --prod`, because the two deploys
+race for the production alias.
 
 ---
 
-## Limits, stated plainly
+## Known limits
 
-- **4.5 MB per file.** Audio flows through a serverless function, and Vercel caps
-  request bodies there. That's roughly 9–18 minutes of mono MP3 at 32–64 kbps;
-  raw WAV exports will not fit. The page checks size before uploading and says
-  so. Lifting this means adding object storage with a signed upload URL.
-- **Nothing is saved.** Reloading the page loses the result. Single session by
-  design.
-- **Speaker roles are a guess.** Diarization returns A/B, not agent/customer; the
-  first speaker is assumed to be the agent.
-- **One shared access code, no user accounts.** Enough to keep a demo link from
-  becoming an open, billable endpoint; not an authentication system. There is no
-  rate limit on unlock attempts either — a long random code is what makes brute
-  force impractical.
-- **No multi-tenancy, no history.** Results live in the browser session only.
+- **4.5 MB per file.** Audio passes through a serverless function, and Vercel
+  caps request bodies there. That is roughly 9–18 minutes of mono MP3 at
+  32–64 kbps; raw WAV will not fit. The page checks the size before uploading.
+- **Nothing is saved.** Reloading the page loses the result.
+- **Speaker roles are a guess.** Diarization returns A/B; the first speaker is
+  assumed to be the agent. Stereo recordings remove the guess.
+- **The access gate is a shared code**, not user authentication. The app has
+  no rate limiting of its own; use the host's firewall (see above).
 - **Model output varies between runs.** The same recording scored 78 and then 85
-  on consecutive runs at temperature 0. Every quote verified both times, but
-  expect the wording of coaching points to move.
-- **Speaker roles are a guess**, and diarization occasionally misplaces a phrase
-  at a turn boundary. `multichannel` removes both problems where the telephony
-  platform records the two legs separately.
-- Roughly $0.05 for a 10-minute call (~$0.03 transcription + ~$0.02 analysis),
-  and about 50 seconds end to end.
+  on consecutive runs at temperature 0. Every quote verified both times, but the
+  wording of coaching points changes.
+
+---
+
+## Contributing
+
+Contributions that make the pipeline easier to understand or adapt are very
+welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## License
+
+[MIT](LICENSE) © 2026 Nitin Goswami

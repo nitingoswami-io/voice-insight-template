@@ -37,7 +37,7 @@ describe("UnlockForm", () => {
   it("leaves the page with a hard navigation once the code is accepted", async () => {
     /*
      * The regression this exists for: router.replace() resolves from Next's
-     * client Router Cache, which already holds the middleware redirect back to
+     * client Router Cache, which already holds the proxy redirect back to
      * /unlock. The form appeared to do nothing at all — the reported symptom
      * was "the dialog box doesn't disappear".
      */

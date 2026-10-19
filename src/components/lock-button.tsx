@@ -6,9 +6,8 @@ import { useState } from "react";
  * Give the demo back its lock.
  *
  * The access cookie is httpOnly and lasts a week, so without this the only way
- * to re-lock a machine is to go digging in browser settings — awkward when a
- * laptop is handed to a prospect, or when you simply want to check the gate
- * still works.
+ * to re-lock a machine is to go digging in browser settings — awkward on a
+ * shared machine, or when you simply want to check the gate still works.
  */
 export function LockButton() {
   const [busy, setBusy] = useState(false);
@@ -20,7 +19,7 @@ export function LockButton() {
     // Worst case the cookie survives until it expires, and the user is off the
     // protected page regardless.
     await fetch("/api/access", { method: "DELETE" }).catch(() => {});
-    // Hard navigation so middleware re-runs without the cookie, rather than a
+    // Hard navigation so the proxy re-runs without the cookie, rather than a
     // soft one that would resolve from the client router cache.
     window.location.assign("/");
   }

@@ -8,7 +8,7 @@
  *
  * This exists because a QA score influences an agent's review and their pay. A
  * hallucinated quote in that setting is a fabricated accusation against a named
- * employee, which is strictly worse than having no product at all.
+ * employee, which is strictly worse than showing nothing at all.
  */
 
 import type { Word } from "@/lib/providers/asr";
@@ -31,7 +31,7 @@ export const SIMILARITY_THRESHOLD = 0.85;
  * How far a quote may sit from its claimed timestamp and still be accepted.
  *
  * Calibration matters in both directions. Too strict and we drop true findings
- * over ordinary imprecision, leaving the product looking empty — which erodes
+ * over ordinary imprecision, leaving the output looking empty — which erodes
  * trust just as effectively as a false one. Too loose and the timestamp stops
  * disambiguating short, common quotes ("yes", "हाँ") that legitimately occur
  * dozens of times in one call. Five seconds tolerates model imprecision while
@@ -49,7 +49,7 @@ export const LOW_CONFIDENCE_THRESHOLD = 0.6;
  * in Devanagari, Tamil and their relatives, combining marks are vowel signs
  * carrying phonemic meaning. Dropping them would collapse का, कि and की all to
  * क, which would make unrelated words match and quietly defeat the whole
- * verifier on exactly the languages this product exists to support.
+ * verifier on exactly the multilingual audio this pipeline is meant to handle.
  */
 function stripLatinDiacritics(input: string): string {
   return input

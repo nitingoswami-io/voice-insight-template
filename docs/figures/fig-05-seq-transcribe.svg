@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 540" role="img" aria-label="Sequence: the browser sends the audio to /api/transcribe, which relays it to AssemblyAI and starts a job with language detection and speaker labels; the browser then polls /api/status every three seconds until the transcript is ready." class="sketch" font-family="Kalam, 'Segoe Print', 'Comic Sans MS', cursive" font-size="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+<style>/* standalone viewing only — stripped when the figure is inlined into a page */
+svg{color:#17202b} .sk-bg{fill:#ffffff} .sk-fill{fill:#e3f2ef} .sk-accent{stroke:#0f766e} text.sk-accent{fill:#0f766e;stroke:none}
+@media (prefers-color-scheme:dark){svg{color:#e4e9ef} .sk-bg{fill:#161d25} .sk-fill{fill:#15302d} .sk-accent{stroke:#4fd1c0} text.sk-accent{fill:#4fd1c0}}
+</style>
+<defs>
+<filter id="rough" x="-3%" y="-3%" width="106%" height="106%"><feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="6" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G"/></filter>
+<marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M1.5 1.5 L8.5 5 L1.5 8.5" fill="none" stroke="currentColor" stroke-width="1.4"/></marker>
+<marker id="arrow-accent" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="sk-accent" d="M1.5 1.5 L8.5 5 L1.5 8.5" fill="none" stroke="currentColor" stroke-width="1.4"/></marker>
+</defs>
+<g filter="url(#rough)">
+  <circle cx="60" cy="19" r="9"/>
+  <path d="M60 28 V54 M45 38 H75 M60 54 L48 72 M60 54 L72 72"/>
+  <path d="M60 96 V520" stroke-dasharray="3 6" stroke-width="1"/>
+  <rect x="158.0" y="24" width="84" height="34" rx="6"/>
+  <path d="M200 58 V520" stroke-dasharray="3 6" stroke-width="1"/>
+  <rect x="298.0" y="24" width="124" height="34" rx="6"/>
+  <path d="M360 58 V520" stroke-dasharray="3 6" stroke-width="1"/>
+  <rect x="471.0" y="24" width="98" height="34" rx="6"/>
+  <path d="M520 58 V520" stroke-dasharray="3 6" stroke-width="1"/>
+  <rect x="634.5" y="24" width="91" height="34" rx="6"/>
+  <path d="M680 58 V520" stroke-dasharray="3 6" stroke-width="1"/>
+  <path d="M64 118 L196 118" marker-end="url(#arrow)"/>
+  <path d="M200 144 L226 144 L226 156 L203 156" marker-end="url(#arrow)"/>
+  <path d="M204 184 L356 184" marker-end="url(#arrow)"/>
+  <path d="M360 210 L386 210 L386 222 L363 222" marker-end="url(#arrow)"/>
+  <path d="M364 250 L676 250" class="sk-accent" marker-end="url(#arrow-accent)"/>
+  <path d="M676 280 L364 280" class="sk-accent" stroke-dasharray="6 5" marker-end="url(#arrow-accent)"/>
+  <path d="M364 310 L676 310" class="sk-accent" marker-end="url(#arrow-accent)"/>
+  <path d="M676 340 L364 340" class="sk-accent" stroke-dasharray="6 5" marker-end="url(#arrow-accent)"/>
+  <path d="M356 370 L204 370" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+  <path d="M140 396 H750 V546 H140 Z" stroke-dasharray="2 4" stroke-width="1.1"/>
+  <path d="M204 434 L516 434" marker-end="url(#arrow)"/>
+  <path d="M524 464 L676 464" marker-end="url(#arrow)"/>
+  <path d="M676 494 L524 494" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+  <path d="M516 524 L204 524" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+</g>
+<g fill="currentColor" stroke="none">
+  <text x="60" y="90" text-anchor="middle">Visitor</text>
+  <text x="200.0" y="46.0" text-anchor="middle">Analyzer</text>
+  <text x="360.0" y="46.0" text-anchor="middle">/api/transcribe</text>
+  <text x="520.0" y="46.0" text-anchor="middle">/api/status</text>
+  <text x="680.0" y="46.0" text-anchor="middle">AssemblyAI</text>
+  <rect class="sk-bg" x="59" y="99" width="142" height="17" rx="3"/>
+  <text x="130.0" y="111" text-anchor="middle" font-size="12">1  choose audio file</text>
+  <text x="234" y="154" text-anchor="start" font-size="12">2  size ≤ maxBytes?</text>
+  <rect class="sk-bg" x="212" y="165" width="135" height="17" rx="3"/>
+  <text x="280.0" y="177" text-anchor="middle" font-size="12">3  POST audio bytes</text>
+  <text x="394" y="220" text-anchor="start" font-size="12">4  cap check (cookie)</text>
+  <rect class="sk-bg" x="456" y="231" width="129" height="17" rx="3"/>
+  <text x="520.0" y="243" text-anchor="middle" class="sk-accent" font-size="12">5  POST /v2/upload</text>
+  <rect class="sk-bg" x="472" y="261" width="95" height="17" rx="3"/>
+  <text x="520.0" y="273" text-anchor="middle" class="sk-accent" font-size="12">6  upload_url</text>
+  <rect class="sk-bg" x="442" y="291" width="155" height="17" rx="3"/>
+  <text x="520.0" y="303" text-anchor="middle" class="sk-accent" font-size="12">7  POST /v2/transcript</text>
+  <rect class="sk-bg" x="486" y="321" width="68" height="17" rx="3"/>
+  <text x="520.0" y="333" text-anchor="middle" class="sk-accent" font-size="12">8  job id</text>
+  <rect class="sk-bg" x="246" y="351" width="68" height="17" rx="3"/>
+  <text x="280.0" y="363" text-anchor="middle" font-size="12">9  { id }</text>
+  <text x="148" y="411" text-anchor="start" font-size="11.5" font-weight="700">loop · every 3 s until ready</text>
+  <rect class="sk-bg" x="316" y="415" width="88" height="17" rx="3"/>
+  <text x="360.0" y="427" text-anchor="middle" font-size="12">10  GET ?id=</text>
+  <rect class="sk-bg" x="512" y="445" width="176" height="17" rx="3"/>
+  <text x="600.0" y="457" text-anchor="middle" font-size="12">11  GET /v2/transcript/id</text>
+  <rect class="sk-bg" x="562" y="475" width="75" height="17" rx="3"/>
+  <text x="600.0" y="487" text-anchor="middle" font-size="12">12  status</text>
+  <rect class="sk-bg" x="292" y="505" width="135" height="17" rx="3"/>
+  <text x="360.0" y="517" text-anchor="middle" font-size="12">13  working | ready</text>
+</g>
+</svg>

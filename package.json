@@ -1,7 +1,28 @@
 {
-  "name": "lisn10",
+  "name": "voice-insight-template",
   "version": "0.1.0",
   "private": true,
+  "description": "Open-source reference pipeline: speech-to-text, LLM inference and quote verification, using call-centre quality review as the worked example.",
+  "license": "MIT",
+  "author": "Nitin Goswami",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nitingoswami-io/voice-insight-template.git"
+  },
+  "keywords": [
+    "speech-to-text",
+    "asr",
+    "llm",
+    "diarization",
+    "structured-output",
+    "call-center",
+    "quality-assurance",
+    "nextjs",
+    "template"
+  ],
+  "engines": {
+    "node": ">=20.9"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,8 +30,6 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "db:push": "drizzle-kit push",
-    "db:generate": "drizzle-kit generate",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
