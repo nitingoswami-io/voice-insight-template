@@ -10,7 +10,7 @@ you get a transcript with the speakers separated, plus a short assessment —
 what went well, what to coach — where **every observation carries the verbatim
 quote that backs it**. Click a quote and the audio jumps to that moment.
 
-**Live demo:** [lisn10.vercel.app](https://lisn10.vercel.app) — click
+**Live demo:** [voice-insight.nitingoswami.io](https://voice-insight.nitingoswami.io) — click
 **View sample output** on `/demo` for a free walkthrough, or upload a short
 clip (the public demo caps file size to keep API costs bounded).
 

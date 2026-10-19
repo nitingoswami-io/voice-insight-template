@@ -81,7 +81,7 @@ export function UnlockForm({ next }: { next: string }) {
       <button
         type="submit"
         disabled={busy || code.length === 0}
-        className="w-full rounded-md bg-[var(--foreground)] px-4 py-2.5 text-sm text-[var(--background)] transition-opacity disabled:opacity-35"
+        className="dl-btn dl-btn--primary w-full"
       >
         {busy ? "Checking…" : "Unlock the demo"}
       </button>
