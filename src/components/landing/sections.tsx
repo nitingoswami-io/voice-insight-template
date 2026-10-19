@@ -83,13 +83,13 @@ export function Hero() {
       <div className="mt-8 flex flex-wrap items-center gap-3">
         <Link
           href="/demo"
-          className="rounded-md bg-[var(--foreground)] px-5 py-2.5 text-sm text-[var(--background)] transition-opacity hover:opacity-90"
+          className="dl-btn dl-btn--primary"
         >
           Run the demo →
         </Link>
         <a
           href={REPO_URL}
-          className="rounded-md border border-[var(--border-strong)] px-5 py-2.5 text-sm transition-colors hover:bg-[var(--accent-soft)]"
+          className="dl-btn"
         >
           Read the source
         </a>
@@ -513,13 +513,13 @@ npm run dev`}
           <div className="flex flex-wrap gap-3">
             <a
               href={`${REPO_URL}/blob/main/docs/ARCHITECTURE.md`}
-              className="rounded-md bg-[var(--foreground)] px-4 py-2 text-sm text-[var(--background)] transition-opacity hover:opacity-90"
+              className="dl-btn"
             >
               Architecture guide
             </a>
             <a
               href={`${REPO_URL}/blob/main/CONTRIBUTING.md`}
-              className="rounded-md border border-[var(--border-strong)] px-4 py-2 text-sm transition-colors hover:bg-[var(--accent-soft)]"
+              className="dl-btn"
             >
               Contributing
             </a>
