@@ -219,6 +219,18 @@ Details worth noting if you reuse it:
 - It is a shared code, not user authentication, and has no rate limiting. Use a
   long random value.
 
+### Public mode
+
+Setting `PUBLIC_MAX_MB` opens `/demo` and the API routes to everyone but caps
+the upload size. `uploadLimitFor()` in `src/lib/access.ts` returns that cap for
+anonymous visitors and the 4.5 MB platform limit for anyone holding a valid
+access cookie. `POST /api/transcribe` enforces it on the server; the demo page
+passes the same number to the browser so oversized files fail before upload.
+
+The size cap bounds the cost of one run. Bounding the number of runs is left to
+the host's firewall (per-IP rate limits) and to prepaid provider credit, so the
+template still needs no database. The README has a worked setup.
+
 ---
 
 ## 7. Known limits

@@ -134,12 +134,39 @@ Add the environment variables in your host's dashboard:
 | `ASSEMBLYAI_API_KEY` | yes | Transcription |
 | `XAI_API_KEY` | yes | Analysis |
 | `ACCESS_CODE` | recommended for public URLs | Puts a shared code in front of `/demo` and the API routes |
+| `PUBLIC_MAX_MB` | no | Public mode: open to everyone, uploads capped at this size |
 | `XAI_MODEL`, `XAI_BASE_URL` | no | Model and endpoint override |
 
 **Set `ACCESS_CODE` before you share a public URL.** Without it, anyone who
 finds the deployment can spend your API credit. The gate is off by default so a
 fresh fork works on first deploy. Use a long random value, for example
 `openssl rand -base64 24`.
+
+| `ACCESS_CODE` | `PUBLIC_MAX_MB` | Result |
+|---|---|---|
+| unset | unset | Open to everyone, 4.5 MB uploads (local development) |
+| set | unset | Private: `/demo` and the API need the code |
+| set | set | Public demo: open to everyone, capped uploads; the code lifts the cap |
+| unset | set | Open to everyone, capped uploads for all |
+
+### Running a public demo with a spending limit
+
+Each run spends real API credit, so a public demo needs a ceiling. Three layers,
+from most to least important:
+
+1. **Hard cap at the providers.** Use prepaid credit with auto-recharge turned
+   off on AssemblyAI and xAI. This bounds the worst case whatever else fails.
+2. **Per-visitor rate limit.** Add Vercel Firewall rules on `POST
+   /api/transcribe` and `POST /api/insight` (for example 3 per IP per hour),
+   plus a looser one on `GET /api/status`, which the browser polls every 3 s.
+   Blocked requests are not billed. Counters are per region, so the effective
+   limit is somewhat looser than configured. Roll the rules out in `log` mode
+   first and check the firewall dashboard before enforcing.
+3. **Shorter files.** Set `PUBLIC_MAX_MB` (for example `1.5`, a few minutes of
+   compressed audio) so each run costs a cent or two. The server enforces it;
+   the browser checks it too, so oversized files fail instantly.
+
+"View sample output" on `/demo` costs nothing at all: no API is called.
 
 On Vercel, environment-variable changes take effect on the next deployment. If
 the repository is connected to Vercel, pushing to `main` already deploys
@@ -156,8 +183,8 @@ race for the production alias.
 - **Nothing is saved.** Reloading the page loses the result.
 - **Speaker roles are a guess.** Diarization returns A/B; the first speaker is
   assumed to be the agent. Stereo recordings remove the guess.
-- **The access gate is a shared code**, not user authentication, and has no
-  rate limiting.
+- **The access gate is a shared code**, not user authentication. The app has
+  no rate limiting of its own; use the host's firewall (see above).
 - **Model output varies between runs.** The same recording scored 78 and then 85
   on consecutive runs at temperature 0. Every quote verified both times, but the
   wording of coaching points changes.

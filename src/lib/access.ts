@@ -9,9 +9,15 @@
  * The landing page stays public either way — the gate covers only the routes
  * that cost something.
  *
+ * Public mode (`PUBLIC_MAX_MB`) is the middle ground for a hosted demo: the
+ * routes are open to everyone, but uploads are capped at that size. A valid
+ * access cookie lifts the cap back to the platform limit.
+ *
  * Built on Web Crypto rather than `node:crypto` so the module stays portable
  * across runtimes — the proxy and the route handlers both import it.
  */
+
+import { PLATFORM_MAX_BYTES } from "@/lib/limits";
 
 export const ACCESS_COOKIE = "voice_insight_access";
 
@@ -67,7 +73,35 @@ export function safeNext(next: string | null | undefined): string {
  * fork works on first deploy; set a code before sharing a public URL.
  */
 export function gateActive(): boolean {
-  return accessConfigured();
+  return accessConfigured() && !publicMode();
+}
+
+/**
+ * The public upload cap in bytes, or null when public mode is off.
+ *
+ * Never above the platform limit, and ignored when the value is not a positive
+ * number — a typo should not silently remove the cap or block every upload.
+ */
+export function publicMaxBytes(): number | null {
+  const raw = process.env.PUBLIC_MAX_MB;
+  if (!raw) return null;
+  const mb = Number(raw);
+  if (!Number.isFinite(mb) || mb <= 0) return null;
+  return Math.min(Math.round(mb * 1024 * 1024), PLATFORM_MAX_BYTES);
+}
+
+/** Whether the demo is open to everyone with a capped upload size. */
+export function publicMode(): boolean {
+  return publicMaxBytes() !== null;
+}
+
+/** The largest upload this visitor may send, given their access cookie. */
+export async function uploadLimitFor(
+  token: string | undefined | null,
+): Promise<number> {
+  const cap = publicMaxBytes();
+  if (cap === null) return PLATFORM_MAX_BYTES;
+  return (await isValidToken(token)) ? PLATFORM_MAX_BYTES : cap;
 }
 
 function toBase64Url(bytes: ArrayBuffer): string {

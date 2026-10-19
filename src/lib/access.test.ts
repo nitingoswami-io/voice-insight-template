@@ -7,12 +7,18 @@ import {
   isValidToken,
   issueToken,
   accessConfigured,
+  publicMaxBytes,
+  publicMode,
   safeNext,
+  uploadLimitFor,
 } from "@/lib/access";
+import { PLATFORM_MAX_BYTES } from "@/lib/limits";
 
 beforeEach(() => {
   vi.stubEnv("ACCESS_CODE", "");
   delete process.env.ACCESS_CODE;
+  vi.stubEnv("PUBLIC_MAX_MB", "");
+  delete process.env.PUBLIC_MAX_MB;
 });
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -173,5 +179,44 @@ describe("safeNext", () => {
   it("falls back when nothing was given", () => {
     expect(safeNext(null)).toBe("/demo");
     expect(safeNext("")).toBe("/demo");
+  });
+});
+
+describe("public mode", () => {
+  const MB = 1024 * 1024;
+  const setPublic = (value: string) => vi.stubEnv("PUBLIC_MAX_MB", value);
+
+  it("is off by default, with the platform limit for everyone", async () => {
+    expect(publicMode()).toBe(false);
+    expect(await uploadLimitFor(undefined)).toBe(PLATFORM_MAX_BYTES);
+  });
+
+  it("opens the gate even when an access code is set", () => {
+    // The code now lifts the cap instead of guarding the door.
+    setCode("let-me-in-please");
+    setPublic("1.5");
+    expect(publicMode()).toBe(true);
+    expect(gateActive()).toBe(false);
+  });
+
+  it("caps anonymous visitors and lifts the cap for a valid cookie", async () => {
+    setCode("let-me-in-please");
+    setPublic("1.5");
+    expect(await uploadLimitFor(undefined)).toBe(1.5 * MB);
+    expect(await uploadLimitFor("forged-token")).toBe(1.5 * MB);
+    expect(await uploadLimitFor(await issueToken())).toBe(PLATFORM_MAX_BYTES);
+  });
+
+  it("never raises the cap above the platform limit", () => {
+    setPublic("50");
+    expect(publicMaxBytes()).toBe(PLATFORM_MAX_BYTES);
+  });
+
+  it("ignores a value that is not a positive number", () => {
+    // A typo should neither remove the cap silently nor block every upload.
+    for (const bad of ["abc", "0", "-2"]) {
+      setPublic(bad);
+      expect(publicMaxBytes()).toBeNull();
+    }
   });
 });

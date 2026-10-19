@@ -16,6 +16,7 @@ import { TalkShare } from "@/components/charts/talk-share";
 import { HeroScore, Meter, Stat } from "@/components/charts/stat";
 import { CategoryScores } from "@/components/charts/category-scores";
 import { LockButton } from "@/components/lock-button";
+import { PLATFORM_MAX_BYTES, formatMb } from "@/lib/limits";
 import {
   formatDuration,
   formatPercent,
@@ -49,8 +50,6 @@ type Result = {
 
 type Stage = "idle" | "uploading" | "transcribing" | "analyzing" | "done";
 
-/** Mirrors the server's cap. Checked here so oversized files fail instantly. */
-const MAX_BYTES = 4.5 * 1024 * 1024;
 
 const STAGE_COPY: Record<Exclude<Stage, "idle" | "done">, string> = {
   uploading: "Uploading audio",
@@ -83,8 +82,21 @@ function sampleResult(): Result {
   };
 }
 
-/** `gated` shows the lock button; it is only meaningful when ACCESS_CODE is set. */
-export function Analyzer({ gated = false }: { gated?: boolean }) {
+/**
+ * `maxBytes` mirrors the server's limit for this visitor, so oversized files
+ * fail instantly. `gated` shows the lock button. `canUnlock` offers an access
+ * code to lift the public-demo cap.
+ */
+export function Analyzer({
+  maxBytes = PLATFORM_MAX_BYTES,
+  gated = false,
+  canUnlock = false,
+}: {
+  maxBytes?: number;
+  gated?: boolean;
+  canUnlock?: boolean;
+}) {
+  const capped = maxBytes < PLATFORM_MAX_BYTES;
   const inputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const rowRefs = useRef<Record<number, HTMLLIElement | null>>({});
@@ -145,11 +157,14 @@ export function Analyzer({ gated = false }: { gated?: boolean }) {
     setStage("idle");
     attachAudio(picked);
     if (!picked) return;
-    if (picked.size > MAX_BYTES) {
+    if (picked.size > maxBytes) {
       setFile(picked);
       setError(
-        `That file is ${(picked.size / 1024 / 1024).toFixed(1)} MB, over the 4.5 MB limit. ` +
-          `Audio is relayed through a serverless function in this prototype. A mono MP3 at 32–64 kbps holds roughly 9–18 minutes.`,
+        capped
+          ? `That file is ${formatMb(picked.size)}. The public demo accepts up to ${formatMb(maxBytes)} to keep API costs bounded. ` +
+              `Try a shorter clip, or clone the repository and run it with your own keys.`
+          : `That file is ${formatMb(picked.size)}, over the 4.5 MB limit. ` +
+              `Audio is relayed through a serverless function in this template. A mono MP3 at 32–64 kbps holds roughly 9–18 minutes.`,
       );
       return;
     }
@@ -245,6 +260,20 @@ export function Analyzer({ gated = false }: { gated?: boolean }) {
             Upload a recording. Every observation comes back with the quote that
             backs it — click one to hear it.
           </p>
+          {capped && (
+            <p className="mt-2 text-xs text-[var(--subtle)]">
+              Public demo: files up to {formatMb(maxBytes)} (a few minutes of
+              compressed audio).
+              {canUnlock && (
+                <>
+                  {" "}
+                  <a href="/unlock" className="text-[var(--accent)] hover:underline">
+                    Have an access code?
+                  </a>
+                </>
+              )}
+            </p>
+          )}
         </div>
         {gated && <LockButton />}
       </header>
@@ -294,7 +323,7 @@ export function Analyzer({ gated = false }: { gated?: boolean }) {
             <button
               type="button"
               onClick={analyse}
-              disabled={!file || working || !!(file && file.size > MAX_BYTES)}
+              disabled={!file || working || !!(file && file.size > maxBytes)}
               className="h-9 rounded-md bg-[var(--foreground)] px-4 text-sm text-[var(--background)] transition-opacity disabled:opacity-35"
             >
               {working ? "Working…" : "Analyse"}

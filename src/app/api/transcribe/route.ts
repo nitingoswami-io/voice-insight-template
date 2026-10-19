@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { assemblyAi } from "@/lib/providers/asr-assemblyai";
+import {
+  ACCESS_COOKIE,
+  accessConfigured,
+  uploadLimitFor,
+} from "@/lib/access";
+import { PLATFORM_MAX_BYTES, formatMb } from "@/lib/limits";
 
 export const maxDuration = 60;
-
-/** Vercel caps function request bodies at 4.5 MB, and the audio flows through here. */
-const MAX_BYTES = 4.5 * 1024 * 1024;
 
 /**
  * Accept the raw audio and start transcription.
@@ -22,13 +26,21 @@ export async function POST(request: Request) {
     if (audio.byteLength === 0) {
       return NextResponse.json({ error: "No audio received" }, { status: 400 });
     }
-    if (audio.byteLength > MAX_BYTES) {
-      return NextResponse.json(
-        {
-          error: `That file is ${(audio.byteLength / 1024 / 1024).toFixed(1)} MB. This prototype relays audio through a serverless function, which caps request bodies at 4.5 MB. Use a compressed copy (mono MP3 at 32-64 kbps holds roughly 9-18 minutes).`,
-        },
-        { status: 413 },
-      );
+    // Enforced here, not only in the browser: the client check is a
+    // convenience, and anyone can call this route directly.
+    const token = (await cookies()).get(ACCESS_COOKIE)?.value;
+    const limit = await uploadLimitFor(token);
+    if (audio.byteLength > limit) {
+      const size = formatMb(audio.byteLength);
+      const error =
+        limit < PLATFORM_MAX_BYTES
+          ? `That file is ${size}. The public demo accepts up to ${formatMb(limit)} to keep API costs bounded.` +
+            (accessConfigured()
+              ? " An access code lifts this to 4.5 MB."
+              : "") +
+            " Or clone the repository and run it with your own keys."
+          : `That file is ${size}. This template relays audio through a serverless function, which caps request bodies at 4.5 MB. Use a compressed copy (mono MP3 at 32-64 kbps holds roughly 9-18 minutes).`;
+      return NextResponse.json({ error }, { status: 413 });
     }
 
     const audioUrl = await assemblyAi.upload(audio, contentType);

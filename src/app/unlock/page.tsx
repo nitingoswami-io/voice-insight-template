@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { UnlockForm } from "@/components/unlock-form";
-import { accessConfigured, safeNext } from "@/lib/access";
+import { accessConfigured, publicMaxBytes, safeNext } from "@/lib/access";
+import { formatMb } from "@/lib/limits";
 import { PROJECT_NAME } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
@@ -19,14 +20,17 @@ export default async function UnlockPage({
   const destination = safeNext(next);
 
   const configured = accessConfigured();
+  const publicCap = publicMaxBytes();
 
   return (
     <div className="mx-auto flex max-w-md flex-col justify-center py-24">
       <h1 className="text-2xl font-medium tracking-tight">Demo access</h1>
       <p className="mt-3 text-[15px] leading-relaxed text-[var(--muted)]">
-        This deployment has an access code set, because the demo spends real
-        API credit on every call. Ask whoever runs it for the code — or clone
-        the repository and run it yourself with your own keys.
+        {publicCap !== null
+          ? `The public demo is open to everyone, with files up to ${formatMb(publicCap)}. An access code lifts that to 4.5 MB.`
+          : "This deployment has an access code set, because the demo spends real API credit on every call."}{" "}
+        Ask whoever runs it for the code — or clone the repository and run it
+        yourself with your own keys.
       </p>
 
       <div className="mt-8 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6">
