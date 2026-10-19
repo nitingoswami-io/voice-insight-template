@@ -4,7 +4,7 @@
 
 /*
  * The app's own token names, mapped onto the shared demo-look palette
- * (src/app/demo-look.css, from the demo-look skill). Change colours there,
+ * (src/app/demo-look.css, from the demo-doc skill's assets/live-demo/). Change colours there,
  * not here. Night edition comes for free: the demo-look tokens switch.
  *
  * Newsprint red is rationed (primary action, focus, active stage), so the
