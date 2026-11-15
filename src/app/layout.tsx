@@ -38,7 +38,8 @@ export default function RootLayout({
           ]}
           links={[
             { href: "/", label: "Overview" },
-            { href: "/demo", label: "Run the demo" },
+            { href: "/demo", label: "Analyze a call" },
+            { href: "/interpreter", label: "Live interpreter" },
             { href: DESIGN_DOC_URL, label: "Design doc" },
             { href: REPO_URL, label: "Source" },
           ]}
