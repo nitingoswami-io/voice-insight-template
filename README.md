@@ -69,8 +69,13 @@ You need two keys, and both providers offer free credit:
 
 | Variable | Used for | Get one |
 |---|---|---|
-| `ASSEMBLYAI_API_KEY` | Transcription, language detection, diarization | [assemblyai.com](https://www.assemblyai.com/dashboard) |
-| `XAI_API_KEY` | LLM analysis | [console.x.ai](https://console.x.ai) |
+| `ASSEMBLYAI_API_KEY` | Transcription for `/demo` (analyzer) | [assemblyai.com](https://www.assemblyai.com/dashboard) |
+| `XAI_API_KEY` | LLM analysis for `/demo` (analyzer) | [console.x.ai](https://console.x.ai) |
+| `OPENAI_API_KEY` | Whisper STT and GPT-4o-mini translation for `/interpreter` | [platform.openai.com](https://platform.openai.com/api-keys) |
+| `ELEVENLABS_API_KEY` | TTS for `/interpreter` | [elevenlabs.io](https://elevenlabs.io/app/settings/api-keys) |
+
+`/demo` and `/interpreter` are independent — each uses only its own keys, so
+you can run one without configuring the other.
 
 No keys? Open `/demo` and click **View sample output** to explore the UI with a
 built-in example. No API is called.

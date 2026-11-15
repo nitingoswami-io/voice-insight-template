@@ -8,6 +8,12 @@ The worked example is **call-centre quality review**: a recorded support call
 goes in, and a short assessment comes out — what went well, what to coach —
 where every observation carries a verbatim quote from the call.
 
+A second, smaller pipeline lives alongside it: a **live Hindi↔English voice
+interpreter** at `/interpreter`, written as a deliberately different shape
+(short batch requests, no verification, no persistence) so the two examples
+together cover both ends of the voice-pipeline design space. See
+[section 7](#7-a-second-pipeline--the-live-interpreter).
+
 ---
 
 ## 1. The shape of it
@@ -237,7 +243,123 @@ template still needs no database. The README has a worked setup.
 
 ---
 
-## 7. Known limits
+## 7. A second pipeline — the live interpreter
+
+**Files:** `src/app/interpreter/page.tsx`,
+`src/app/interpreter/interpreter-client.tsx`,
+`src/app/api/interpreter/translate/route.ts`,
+`src/lib/interpreter/pipeline.ts`
+
+The scenario: a native Hindi speaker is calling a US restaurant and does not
+speak English. They hold a button on their side, speak, and the other side
+hears the English translation — and vice versa.
+
+```
+                ┌─────────── browser ───────────┐
+                │  MediaRecorder → Blob         │
+                └──────┬────────────────────────┘
+                       │ POST /api/interpreter/translate
+                       │ (multipart: audio + direction)
+                       ▼
+          ┌──────────────────────────────────────────┐
+          │  Whisper        — audio   → transcript   │  ~2 s
+          │  GPT-4o-mini    — hi text → en text      │  ~1 s
+          │  ElevenLabs     — en text → mp3 bytes    │  ~2 s
+          └──────────────────────────────────────────┘
+                       │ JSON: { sourceTranscript,
+                       │         translation,
+                       │         audioBase64 }
+                       ▼
+                   plays automatically on the other side
+```
+
+Each hop is one HTTP request. There is no polling, no job id and no webhook,
+because every stage is short enough to fit inside a single serverless
+invocation.
+
+### Why this is a different shape from the analyzer
+
+| | Analyzer (`/demo`) | Interpreter (`/interpreter`) |
+|---|---|---|
+| Input | recorded file, up to 4.5 MB | live microphone, a few seconds per utterance |
+| ASR | AssemblyAI (diarization, word timings, language detection) | OpenAI Whisper (one language known per hop, no diarization needed) |
+| LLM | structured JSON, rubric-driven assessment | free-form single-sentence translation |
+| Output | HTML page with verified quotes | an MP3 the other side can play |
+| Verification | every claim grounded against the transcript | none — the model is the source of truth, because the goal is to be spoken, not audited |
+| Latency budget | ~50 s is fine | ~5 s is fine; demo visibility matters more than another second |
+| State | job id polled between calls | stateless, one request per utterance |
+
+They share the repo, the access gate pattern, the Vercel limits and the
+newspaper look. Everything else is independent on purpose, so a reader can
+pick either shape as a starting point.
+
+### Why each intermediate artifact is on the page
+
+The UI shows the Hindi transcript, the English translation, and plays the
+English audio. All three. It would be shorter to call Whisper's
+`audio/translations` endpoint (Hindi audio → English text in one hop) and skip
+the transcript, but then the demo would hide half of what is happening. For a
+reference implementation the point is visibility — the transcript is the
+feature, not an implementation detail.
+
+### Why no streaming
+
+The interpreter is an interactive demo, so streaming would normally be the
+obvious design: incremental ASR tokens, incremental translation, incremental
+TTS chunks. It is deliberately batch here because:
+
+- The point of the demo is to make the three stages legible. A three-stage
+  streaming pipeline with partial outputs that revise themselves is harder to
+  read than three serial requests with three visible artifacts.
+- The utterances are seconds long. Streaming within one short request mostly
+  saves latency the user does not notice.
+- Vercel Functions on Fluid Compute support streaming, so a streaming version
+  can be slotted in later without changing the surrounding architecture.
+
+### Why Whisper here but AssemblyAI in the analyzer
+
+Different jobs. The analyzer needs diarization and word-level timings so
+`verify.ts` can match quotes to speakers and timestamps. The interpreter has
+one speaker per utterance and never audits what it said, so none of that is
+useful. Whisper is simpler for that case — one call, one string back — and the
+`language` hint makes it reliable on short clips. The two pipelines also
+exercise two providers, which is useful in a template.
+
+### The TTS step
+
+ElevenLabs is called over REST, not through an SDK, because the dependency
+surface is one `fetch()` and the response is raw MP3 bytes. The multilingual
+voice model (`eleven_multilingual_v2`) handles both Hindi and English with the
+same voice id, so the default configuration works for either direction. The
+two `INTERPRETER_VOICE_*` env vars let you pick nicer language-specific voices
+from the ElevenLabs library without touching code.
+
+The MP3 is returned base64-encoded inside the JSON body. For utterances of a
+few seconds that is a few tens of kilobytes, well inside the 4.5 MB response
+limit, and it lets the browser drop the audio straight into an `<audio>`
+element with a `data:` URL. A streaming response or an object-storage handoff
+would be the right call for longer clips.
+
+### What is missing on purpose
+
+The interpreter is a demo, not a product. The pieces a shipping version would
+need, and the reasons they are left out:
+
+- **Barge-in.** The caller should be able to interrupt the playback the moment
+  the other side hears the point. Needs full-duplex streaming on both sides.
+- **VAD.** Hold-to-talk is explicit and simple, but a hands-free version
+  needs voice-activity detection and a silence threshold that stands up to
+  restaurant noise.
+- **Conversation state.** Each turn is independent. "What I just said" or "the
+  dish I asked about" won't resolve across turns without a short context
+  window on the LLM step.
+- **Real telephony.** Audio plays in the browser. Reaching an actual US phone
+  needs Twilio Voice with `<Stream>` and `<Play>` and a different request shape
+  than one multipart upload.
+
+---
+
+## 8. Known limits
 
 - **4.5 MB per upload.** Audio passes through a serverless function, and Vercel
   caps request bodies there. That is roughly 9–18 minutes of mono MP3 at
@@ -251,7 +373,7 @@ template still needs no database. The README has a worked setup.
 
 ---
 
-## 8. Adapting it
+## 9. Adapting it
 
 | You want to… | Change |
 |---|---|
