@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 320" role="img" aria-label="State diagram for the interpreter panel: idle to recording on press, recording to processing on release, processing back to idle when the turn plays; a short clip, a refused microphone or a failed request moves to error, and pressing again starts a new recording." class="sketch" font-family="Kalam, 'Segoe Print', 'Comic Sans MS', cursive" font-size="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+<style>/* standalone viewing only — stripped when the figure is inlined into a page */
+svg{color:#17202b} .sk-bg{fill:#ffffff} .sk-fill{fill:#e3f2ef} .sk-accent{stroke:#0f766e} text.sk-accent{fill:#0f766e;stroke:none}
+@media (prefers-color-scheme:dark){svg{color:#e4e9ef} .sk-bg{fill:#161d25} .sk-fill{fill:#15302d} .sk-accent{stroke:#4fd1c0} text.sk-accent{fill:#4fd1c0}}
+</style>
+<defs>
+<filter id="rough" x="-3%" y="-3%" width="106%" height="106%"><feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G"/></filter>
+<marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M1.5 1.5 L8.5 5 L1.5 8.5" fill="none" stroke="currentColor" stroke-width="1.4"/></marker>
+<marker id="arrow-accent" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="sk-accent" d="M1.5 1.5 L8.5 5 L1.5 8.5" fill="none" stroke="currentColor" stroke-width="1.4"/></marker>
+</defs>
+<g filter="url(#rough)">
+  <circle cx="40" cy="110" r="7" fill="currentColor"/>
+  <rect x="70" y="88" width="110" height="44" rx="18"/>
+  <rect x="270" y="88" width="140" height="44" rx="18"/>
+  <rect class="sk-accent" x="590" y="88" width="170" height="44" rx="18"/>
+  <rect x="330" y="236" width="120" height="44" rx="18"/>
+  <path d="M48 110 L68 110" marker-end="url(#arrow)"/>
+  <path d="M180 110 L268 110" marker-end="url(#arrow)"/>
+  <path d="M410 110 L588 110" class="sk-accent" marker-end="url(#arrow-accent)"/>
+  <path d="M674 88 C674 30 125 30 125 86" class="sk-accent" marker-end="url(#arrow-accent)"/>
+  <path d="M340 132 L376 234" marker-end="url(#arrow)"/>
+  <path d="M650 132 L452 252" marker-end="url(#arrow)"/>
+  <path d="M125 132 L328 250" marker-end="url(#arrow)"/>
+  <path d="M420 236 L384 134" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+</g>
+<g fill="currentColor" stroke="none">
+  <text x="125.0" y="115.0" text-anchor="middle">idle</text>
+  <text x="340.0" y="107.0" text-anchor="middle">recording</text>
+  <text x="340.0" y="123.0" text-anchor="middle" font-size="11.5">one side only</text>
+  <text x="675.0" y="107.0" text-anchor="middle" class="sk-accent">processing</text>
+  <text x="675.0" y="123.0" text-anchor="middle" font-size="11.5">both buttons disabled</text>
+  <text x="390.0" y="255.0" text-anchor="middle">error</text>
+  <text x="390.0" y="271.0" text-anchor="middle" font-size="11.5">message on that side</text>
+  <rect class="sk-bg" x="203" y="92" width="42" height="17" rx="3"/>
+  <text x="224.0" y="104" text-anchor="middle" font-size="12">press</text>
+  <rect class="sk-bg" x="422" y="92" width="155" height="17" rx="3"/>
+  <text x="499.0" y="104" text-anchor="middle" font-size="12" class="sk-accent">release · blob ≥ 500 B</text>
+  <rect class="sk-bg" x="317" y="34" width="142" height="17" rx="3"/>
+  <text x="388" y="46" text-anchor="middle" font-size="12" class="sk-accent">turn returned → play</text>
+  <rect class="sk-bg" x="274" y="178" width="88" height="17" rx="3"/>
+  <text x="318" y="190" text-anchor="middle" font-size="12">clip &lt; 500 B</text>
+  <rect class="sk-bg" x="509" y="184" width="102" height="17" rx="3"/>
+  <text x="560" y="196" text-anchor="middle" font-size="12">request failed</text>
+  <rect class="sk-bg" x="159" y="184" width="82" height="17" rx="3"/>
+  <text x="200" y="196" text-anchor="middle" font-size="12">mic refused</text>
+  <rect class="sk-bg" x="409" y="164" width="82" height="17" rx="3"/>
+  <text x="450" y="176" text-anchor="middle" font-size="12">press again</text>
+</g>
+</svg>

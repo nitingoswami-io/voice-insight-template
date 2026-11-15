@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 300" role="img" aria-label="Deployment view: the browser talks HTTPS to the Next.js app on Vercel, whose interpreter function calls the OpenAI and ElevenLabs APIs over HTTPS; the proxy.ts access gate does not cover the interpreter route." class="sketch" font-family="Kalam, 'Segoe Print', 'Comic Sans MS', cursive" font-size="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+<style>/* standalone viewing only — stripped when the figure is inlined into a page */
+svg{color:#17202b} .sk-bg{fill:#ffffff} .sk-fill{fill:#e3f2ef} .sk-accent{stroke:#0f766e} text.sk-accent{fill:#0f766e;stroke:none}
+@media (prefers-color-scheme:dark){svg{color:#e4e9ef} .sk-bg{fill:#161d25} .sk-fill{fill:#15302d} .sk-accent{stroke:#4fd1c0} text.sk-accent{fill:#4fd1c0}}
+</style>
+<defs>
+<filter id="rough" x="-3%" y="-3%" width="106%" height="106%"><feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="5" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G"/></filter>
+<marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M1.5 1.5 L8.5 5 L1.5 8.5" fill="none" stroke="currentColor" stroke-width="1.4"/></marker>
+<marker id="arrow-accent" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="sk-accent" d="M1.5 1.5 L8.5 5 L1.5 8.5" fill="none" stroke="currentColor" stroke-width="1.4"/></marker>
+</defs>
+<g filter="url(#rough)">
+  <rect x="20" y="40" width="170" height="220" rx="10" stroke-dasharray="7 5" stroke-width="1.2"/>
+  <rect x="40" y="110" width="130" height="52" rx="6"/>
+  <rect x="230" y="40" width="300" height="220" rx="10" stroke-dasharray="7 5" stroke-width="1.2"/>
+  <rect x="250" y="80" width="260" height="48" rx="6"/>
+  <rect class="sk-accent" x="250" y="170" width="260" height="52" rx="6"/>
+  <rect x="590" y="60" width="170" height="52" rx="6"/>
+  <rect x="594" y="64" width="162" height="44" rx="4"/>
+  <rect x="590" y="180" width="170" height="52" rx="6"/>
+  <rect x="594" y="184" width="162" height="44" rx="4"/>
+  <path d="M170 150 L246 194" class="sk-accent" marker-end="url(#arrow-accent)"/>
+  <path d="M512 186 L586 92" class="sk-accent" marker-end="url(#arrow-accent)"/>
+  <path d="M512 204 L586 204" class="sk-accent" marker-end="url(#arrow-accent)"/>
+</g>
+<g fill="currentColor" stroke="none">
+  <text x="32" y="58" text-anchor="start" font-size="12" font-weight="700">Visitor's device</text>
+  <text x="105.0" y="133.0" text-anchor="middle">Browser</text>
+  <text x="105.0" y="149.0" text-anchor="middle" font-size="11.5">mic permission</text>
+  <text x="242" y="58" text-anchor="start" font-size="12" font-weight="700">Vercel · voice-insight.nitingoswami.io</text>
+  <text x="380.0" y="101.0" text-anchor="middle">proxy.ts</text>
+  <text x="380.0" y="117.0" text-anchor="middle" font-size="11.5">gates /demo + analyzer APIs only</text>
+  <text x="380.0" y="193.0" text-anchor="middle" class="sk-accent">Function: interpreter/translate</text>
+  <text x="380.0" y="209.0" text-anchor="middle" font-size="11.5">Node.js · maxDuration 60 s</text>
+  <text x="675.0" y="83.0" text-anchor="middle">api.openai.com</text>
+  <text x="675.0" y="99.0" text-anchor="middle" font-size="11.5">audio + chat</text>
+  <text x="675.0" y="203.0" text-anchor="middle">api.elevenlabs.io</text>
+  <text x="675.0" y="219.0" text-anchor="middle" font-size="11.5">text-to-speech</text>
+  <rect class="sk-bg" x="168" y="150" width="75" height="17" rx="3"/>
+  <text x="206" y="162" text-anchor="middle" font-size="12" class="sk-accent">HTTPS POST</text>
+  <rect class="sk-bg" x="527" y="116" width="42" height="17" rx="3"/>
+  <text x="548" y="128" text-anchor="middle" font-size="12" class="sk-accent">HTTPS</text>
+  <rect class="sk-bg" x="528" y="186" width="42" height="17" rx="3"/>
+  <text x="549" y="198" text-anchor="middle" font-size="12" class="sk-accent">HTTPS</text>
+  <text x="380" y="286" text-anchor="middle" font-size="12">API keys stay server-side</text>
+</g>
+</svg>

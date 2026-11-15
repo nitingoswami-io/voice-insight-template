@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 380" role="img" aria-label="Use case diagram: the Hindi-speaking caller and the English-speaking restaurant each hold a button to speak and hear the other side's translation; both can read every transcript and translation and replay any turn. OpenAI and ElevenLabs do the speech and language work." class="sketch" font-family="Kalam, 'Segoe Print', 'Comic Sans MS', cursive" font-size="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+<style>/* standalone viewing only — stripped when the figure is inlined into a page */
+svg{color:#17202b} .sk-bg{fill:#ffffff} .sk-fill{fill:#e3f2ef} .sk-accent{stroke:#0f766e} text.sk-accent{fill:#0f766e;stroke:none}
+@media (prefers-color-scheme:dark){svg{color:#e4e9ef} .sk-bg{fill:#161d25} .sk-fill{fill:#15302d} .sk-accent{stroke:#4fd1c0} text.sk-accent{fill:#4fd1c0}}
+</style>
+<defs>
+<filter id="rough" x="-3%" y="-3%" width="106%" height="106%"><feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G"/></filter>
+<marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M1.5 1.5 L8.5 5 L1.5 8.5" fill="none" stroke="currentColor" stroke-width="1.4"/></marker>
+<marker id="arrow-accent" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="sk-accent" d="M1.5 1.5 L8.5 5 L1.5 8.5" fill="none" stroke="currentColor" stroke-width="1.4"/></marker>
+</defs>
+<g filter="url(#rough)">
+  <circle cx="54" cy="129" r="9"/>
+  <path d="M54 138 V164 M39 148 H69 M54 164 L42 182 M54 164 L66 182"/>
+  <circle cx="746" cy="129" r="9"/>
+  <path d="M746 138 V164 M731 148 H761 M746 164 L734 182 M746 164 L758 182"/>
+  <rect x="130" y="24" width="380" height="330" rx="10" stroke-dasharray="7 5" stroke-width="1.2"/>
+  <ellipse class="sk-accent" cx="320" cy="92" rx="150" ry="26"/>
+  <ellipse cx="320" cy="166" rx="150" ry="26"/>
+  <ellipse cx="320" cy="240" rx="150" ry="26"/>
+  <ellipse cx="320" cy="310" rx="120" ry="24"/>
+  <path d="M76 160 L170 92" class="sk-accent"/>
+  <path d="M76 160 L170 240"/>
+  <path d="M76 160 L200 310"/>
+  <path d="M724 160 L470 166"/>
+  <path d="M724 160 L470 240"/>
+  <path d="M724 160 L440 310"/>
+  <rect x="560" y="40" width="140" height="52" rx="6"/>
+  <rect x="564" y="44" width="132" height="44" rx="4"/>
+  <rect x="560" y="250" width="140" height="52" rx="6"/>
+  <rect x="564" y="254" width="132" height="44" rx="4"/>
+  <path d="M470 100 L556 72" class="sk-accent" stroke-dasharray="6 5" marker-end="url(#arrow-accent)"/>
+  <path d="M440 186 L556 276" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+</g>
+<g fill="currentColor" stroke="none">
+  <text x="54" y="200" text-anchor="middle">Caller (Hindi)</text>
+  <text x="746" y="200" text-anchor="middle">Restaurant (English)</text>
+  <text x="142" y="42" text-anchor="start" font-size="12" font-weight="700">Live interpreter · /interpreter</text>
+  <text x="320" y="97" text-anchor="middle" class="sk-accent">UC1 Speak Hindi, they hear English</text>
+  <text x="320" y="171" text-anchor="middle">UC2 Reply in English, caller hears Hindi</text>
+  <text x="320" y="245" text-anchor="middle">UC3 Read transcript + translation</text>
+  <text x="320" y="315" text-anchor="middle">UC4 Replay a turn</text>
+  <text x="630.0" y="63.0" text-anchor="middle">OpenAI</text>
+  <text x="630.0" y="79.0" text-anchor="middle" font-size="11.5">Whisper · GPT-4o-mini</text>
+  <text x="630.0" y="273.0" text-anchor="middle">ElevenLabs</text>
+  <text x="630.0" y="289.0" text-anchor="middle" font-size="11.5">multilingual TTS</text>
+  <rect class="sk-bg" x="489" y="64" width="62" height="17" rx="3"/>
+  <text x="520" y="76" text-anchor="middle" font-size="12" class="sk-accent">STT + MT</text>
+  <rect class="sk-bg" x="446" y="210" width="48" height="17" rx="3"/>
+  <text x="470" y="222" text-anchor="middle" font-size="12">speech</text>
+</g>
+</svg>

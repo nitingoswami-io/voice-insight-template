@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" role="img" aria-label="Component diagram: the browser records one utterance and posts it to the translate route; interpret() runs Whisper, then GPT-4o-mini, then ElevenLabs in order, and returns the transcript, the translation and the MP3 in one JSON body that the browser plays on the other side." class="sketch" font-family="Kalam, 'Segoe Print', 'Comic Sans MS', cursive" font-size="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+<style>/* standalone viewing only — stripped when the figure is inlined into a page */
+svg{color:#17202b} .sk-bg{fill:#ffffff} .sk-fill{fill:#e3f2ef} .sk-accent{stroke:#0f766e} text.sk-accent{fill:#0f766e;stroke:none}
+@media (prefers-color-scheme:dark){svg{color:#e4e9ef} .sk-bg{fill:#161d25} .sk-fill{fill:#15302d} .sk-accent{stroke:#4fd1c0} text.sk-accent{fill:#4fd1c0}}
+</style>
+<defs>
+<filter id="rough" x="-3%" y="-3%" width="106%" height="106%"><feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G"/></filter>
+<marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M1.5 1.5 L8.5 5 L1.5 8.5" fill="none" stroke="currentColor" stroke-width="1.4"/></marker>
+<marker id="arrow-accent" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="sk-accent" d="M1.5 1.5 L8.5 5 L1.5 8.5" fill="none" stroke="currentColor" stroke-width="1.4"/></marker>
+</defs>
+<g filter="url(#rough)">
+  <rect x="20" y="30" width="200" height="300" rx="10" stroke-dasharray="7 5" stroke-width="1.2"/>
+  <rect x="40" y="70" width="160" height="44" rx="6"/>
+  <rect x="40" y="160" width="160" height="44" rx="6"/>
+  <rect x="40" y="250" width="160" height="44" rx="6"/>
+  <path d="M120 114 L120 158" marker-end="url(#arrow)"/>
+  <rect x="260" y="30" width="270" height="300" rx="10" stroke-dasharray="7 5" stroke-width="1.2"/>
+  <rect x="280" y="70" width="230" height="44" rx="6"/>
+  <rect class="sk-fill" x="280" y="160" width="230" height="44" rx="6" stroke="none"/>
+  <rect x="280" y="160" width="230" height="44" rx="6"/>
+  <rect x="280" y="250" width="230" height="44" rx="6"/>
+  <path d="M395 114 L395 158" marker-end="url(#arrow)"/>
+  <path d="M395 204 L395 248" marker-end="url(#arrow)"/>
+  <path d="M200 176 L276 96" class="sk-accent" marker-end="url(#arrow-accent)"/>
+  <path d="M278 110 L204 268" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+  <rect class="sk-accent" x="590" y="40" width="190" height="52" rx="6"/>
+  <rect class="sk-accent" x="594" y="44" width="182" height="44" rx="4"/>
+  <rect class="sk-accent" x="590" y="154" width="190" height="52" rx="6"/>
+  <rect class="sk-accent" x="594" y="158" width="182" height="44" rx="4"/>
+  <rect class="sk-accent" x="590" y="268" width="190" height="52" rx="6"/>
+  <rect class="sk-accent" x="594" y="272" width="182" height="44" rx="4"/>
+  <path d="M512 170 L586 74" class="sk-accent" marker-end="url(#arrow-accent)"/>
+  <path d="M512 182 L586 182" class="sk-accent" marker-end="url(#arrow-accent)"/>
+  <path d="M512 194 L586 290" class="sk-accent" marker-end="url(#arrow-accent)"/>
+</g>
+<g fill="currentColor" stroke="none">
+  <text x="32" y="48" text-anchor="start" font-size="12" font-weight="700">Browser · React</text>
+  <text x="120.0" y="89.0" text-anchor="middle">HoldButton ×2</text>
+  <text x="120.0" y="105.0" text-anchor="middle" font-size="11.5">Caller · Restaurant</text>
+  <text x="120.0" y="179.0" text-anchor="middle">MediaRecorder</text>
+  <text x="120.0" y="195.0" text-anchor="middle" font-size="11.5">webm/opus → Blob</text>
+  <text x="120.0" y="269.0" text-anchor="middle">&lt;audio&gt; autoplay</text>
+  <text x="120.0" y="285.0" text-anchor="middle" font-size="11.5">data:audio/mpeg</text>
+  <text x="128" y="140.0" text-anchor="start" font-size="12">hold / release</text>
+  <text x="272" y="48" text-anchor="start" font-size="12" font-weight="700">Next.js 16 · Vercel Function</text>
+  <text x="395.0" y="89.0" text-anchor="middle">POST /api/interpreter/translate</text>
+  <text x="395.0" y="105.0" text-anchor="middle" font-size="11.5">validate · ≤ 4.5 MB</text>
+  <text x="395.0" y="179.0" text-anchor="middle">interpret(input)</text>
+  <text x="395.0" y="195.0" text-anchor="middle" font-size="11.5">lib/interpreter/pipeline.ts</text>
+  <text x="395.0" y="269.0" text-anchor="middle">env.ts</text>
+  <text x="395.0" y="285.0" text-anchor="middle" font-size="11.5">models · voice ids · keys</text>
+  <rect class="sk-bg" x="210" y="116" width="68" height="17" rx="3"/>
+  <text x="244" y="128" text-anchor="middle" font-size="12" class="sk-accent">multipart</text>
+  <rect class="sk-bg" x="214" y="210" width="35" height="17" rx="3"/>
+  <text x="232" y="222" text-anchor="middle" font-size="12">JSON</text>
+  <text x="685.0" y="63.0" text-anchor="middle" class="sk-accent">1 Whisper</text>
+  <text x="685.0" y="79.0" text-anchor="middle" font-size="11.5">whisper-1 · language hint</text>
+  <text x="685.0" y="177.0" text-anchor="middle" class="sk-accent">2 GPT-4o-mini</text>
+  <text x="685.0" y="193.0" text-anchor="middle" font-size="11.5">translate · temp 0.2</text>
+  <text x="685.0" y="291.0" text-anchor="middle" class="sk-accent">3 ElevenLabs</text>
+  <text x="685.0" y="307.0" text-anchor="middle" font-size="11.5">eleven_multilingual_v2</text>
+  <rect class="sk-bg" x="527" y="100" width="42" height="17" rx="3"/>
+  <text x="548" y="112" text-anchor="middle" font-size="12" class="sk-accent">audio</text>
+  <rect class="sk-bg" x="532" y="164" width="35" height="17" rx="3"/>
+  <text x="549" y="176" text-anchor="middle" font-size="12" class="sk-accent">text</text>
+  <rect class="sk-bg" x="530" y="240" width="35" height="17" rx="3"/>
+  <text x="548" y="252" text-anchor="middle" font-size="12" class="sk-accent">text</text>
+</g>
+</svg>
