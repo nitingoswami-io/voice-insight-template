@@ -8,7 +8,7 @@ The worked example is **call-centre quality review**: a recorded support call
 goes in, and a short assessment comes out — what went well, what to coach —
 where every observation carries a verbatim quote from the call.
 
-A second, smaller pipeline lives alongside it: a **live Hindi↔English voice
+A second, smaller pipeline lives alongside it: a **live multilingual (Hindi / French ↔ English) voice
 interpreter** at `/interpreter`, written as a deliberately different shape
 (short batch requests, no verification, no persistence) so the two examples
 together cover both ends of the voice-pipeline design space. See
@@ -248,23 +248,26 @@ template still needs no database. The README has a worked setup.
 **Files:** `src/app/interpreter/page.tsx`,
 `src/app/interpreter/interpreter-client.tsx`,
 `src/app/api/interpreter/translate/route.ts`,
-`src/lib/interpreter/pipeline.ts`
+`src/lib/interpreter/pipeline.ts`,
+`src/lib/interpreter/languages.ts`
 
-The scenario: a native Hindi speaker is calling a US restaurant and does not
-speak English. They hold a button on their side, speak, and the other side
-hears the English translation — and vice versa.
+The scenario: a native Hindi (or French) speaker is calling a US restaurant
+and does not speak English. Each side picks its language from a dropdown, holds
+a button, speaks, and the other side hears the translation — and vice versa.
+The languages live in one registry, `src/lib/interpreter/languages.ts`; any
+two different entries make a valid pair, and adding one is a single line.
 
 ```
                 ┌─────────── browser ───────────┐
                 │  MediaRecorder → Blob         │
                 └──────┬────────────────────────┘
                        │ POST /api/interpreter/translate
-                       │ (multipart: audio + direction)
+                       │ (multipart: audio + source + target)
                        ▼
           ┌──────────────────────────────────────────┐
           │  Whisper        — audio   → transcript   │  ~2 s
-          │  GPT-4o-mini    — hi text → en text      │  ~1 s
-          │  ElevenLabs     — en text → mp3 bytes    │  ~2 s
+          │  GPT-4o-mini    — src text → tgt text     │  ~1 s
+          │  ElevenLabs     — tgt text → mp3        │  ~2 s
           └──────────────────────────────────────────┘
                        │ JSON: { sourceTranscript,
                        │         translation,
@@ -295,8 +298,8 @@ pick either shape as a starting point.
 
 ### Why each intermediate artifact is on the page
 
-The UI shows the Hindi transcript, the English translation, and plays the
-English audio. All three. It would be shorter to call Whisper's
+The UI shows the source-language transcript, the translation, and plays the
+translated audio. All three. It would be shorter to call Whisper's
 `audio/translations` endpoint (Hindi audio → English text in one hop) and skip
 the transcript, but then the demo would hide half of what is happening. For a
 reference implementation the point is visibility — the transcript is the
@@ -329,10 +332,11 @@ exercise two providers, which is useful in a template.
 
 ElevenLabs is called over REST, not through an SDK, because the dependency
 surface is one `fetch()` and the response is raw MP3 bytes. The multilingual
-voice model (`eleven_multilingual_v2`) handles both Hindi and English with the
-same voice id, so the default configuration works for either direction. The
-two `INTERPRETER_VOICE_*` env vars let you pick nicer language-specific voices
-from the ElevenLabs library without touching code.
+voice model (`eleven_multilingual_v2`) handles Hindi, French and English with
+the same voice id, so the default configuration works for every pair. An
+optional `INTERPRETER_VOICE_<CODE>` env var per language (`_EN`, `_HI`, `_FR`)
+lets you pick nicer language-specific voices from the ElevenLabs library
+without touching code.
 
 The MP3 is returned base64-encoded inside the JSON body. For utterances of a
 few seconds that is a few tens of kilobytes, well inside the 4.5 MB response

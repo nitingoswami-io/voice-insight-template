@@ -14,7 +14,7 @@ export default function Home() {
         <div className="mx-auto flex max-w-5xl flex-col gap-2 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between">
           <p className="text-[var(--ink-2)]">
             <span className="font-medium text-[var(--ink)]">New demo:</span>{" "}
-            Hindi ↔ English live voice interpreter — Whisper → GPT-4o-mini →
+            Hindi / French ↔ English live voice interpreter — Whisper → GPT-4o-mini →
             ElevenLabs.
           </p>
           <Link

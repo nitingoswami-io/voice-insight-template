@@ -1,47 +1,33 @@
 "use client";
 
 import {
+  type KeyboardEvent as ReactKeyboardEvent,
   useCallback,
   useEffect,
   useRef,
   useState,
   type PointerEvent as ReactPointerEvent,
 } from "react";
+import { LANGUAGES, LANG_CODES, type LangCode } from "@/lib/interpreter/languages";
 
-type Direction = "hi->en" | "en->hi";
-
-type SideKey = "hindi" | "english";
+type SideKey = "caller" | "restaurant";
 
 interface SideConfig {
   key: SideKey;
   label: string;
-  sublabel: string;
-  speaks: "Hindi" | "English";
-  direction: Direction;
+  defaultLang: LangCode;
   accent: string;
 }
 
 const SIDES: SideConfig[] = [
-  {
-    key: "hindi",
-    label: "Caller",
-    sublabel: "हिन्दी बोलने वाला",
-    speaks: "Hindi",
-    direction: "hi->en",
-    accent: "var(--series-1)",
-  },
-  {
-    key: "english",
-    label: "Restaurant",
-    sublabel: "English speaker",
-    speaks: "English",
-    direction: "en->hi",
-    accent: "var(--series-2)",
-  },
+  { key: "caller", label: "Caller", defaultLang: "hi", accent: "var(--series-1)" },
+  { key: "restaurant", label: "Restaurant", defaultLang: "en", accent: "var(--series-2)" },
 ];
 
 interface Turn {
-  direction: Direction;
+  from: SideKey;
+  source: LangCode;
+  target: LangCode;
   sourceTranscript: string;
   translation: string;
   audioUrl: string;
@@ -49,6 +35,7 @@ interface Turn {
 
 type Status =
   | { kind: "idle" }
+  | { kind: "starting"; side: SideKey }
   | { kind: "recording"; side: SideKey }
   | { kind: "processing"; side: SideKey }
   | { kind: "error"; side: SideKey; message: string };
@@ -57,11 +44,35 @@ export function InterpreterClient() {
   const [status, setStatus] = useState<Status>({ kind: "idle" });
   const [lastTurn, setLastTurn] = useState<Turn | null>(null);
   const [history, setHistory] = useState<Turn[]>([]);
+  const [langs, setLangs] = useState<Record<SideKey, LangCode>>(
+    () =>
+      Object.fromEntries(SIDES.map((s) => [s.key, s.defaultLang])) as Record<
+        SideKey,
+        LangCode
+      >,
+  );
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
   const audioElRef = useRef<HTMLAudioElement | null>(null);
+  // Set when the button is released while the mic is still being acquired
+  // (e.g. during the first permission prompt), so recording stops on start.
+  const releasedEarlyRef = useRef(false);
+
+  const otherSide = (key: SideKey): SideKey =>
+    key === "caller" ? "restaurant" : "caller";
+
+  const setSideLang = (key: SideKey, lang: LangCode) => {
+    setLangs((prev) => {
+      const other = otherSide(key);
+      // Picking the other side's language swaps the pair rather than
+      // creating an invalid same-language hop.
+      return prev[other] === lang
+        ? { ...prev, [key]: lang, [other]: prev[key] }
+        : { ...prev, [key]: lang };
+    });
+  };
 
   // Autoplay the most recent translation on the opposite side.
   useEffect(() => {
@@ -82,6 +93,10 @@ export function InterpreterClient() {
   const beginRecording = useCallback(
     async (side: SideConfig) => {
       if (status.kind !== "idle" && status.kind !== "error") return;
+      const source = langs[side.key];
+      const target = langs[otherSide(side.key)];
+      releasedEarlyRef.current = false;
+      setStatus({ kind: "starting", side: side.key });
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         streamRef.current = stream;
@@ -113,7 +128,7 @@ export function InterpreterClient() {
           }
           setStatus({ kind: "processing", side: side.key });
           try {
-            const turn = await uploadAndTranslate(blob, side.direction);
+            const turn = await uploadAndTranslate(blob, side.key, source, target);
             setLastTurn(turn);
             setHistory((h) => [...h, turn]);
             setStatus({ kind: "idle" });
@@ -128,6 +143,7 @@ export function InterpreterClient() {
 
         recorder.start();
         setStatus({ kind: "recording", side: side.key });
+        if (releasedEarlyRef.current) recorder.stop();
       } catch (e) {
         setStatus({
           kind: "error",
@@ -139,32 +155,33 @@ export function InterpreterClient() {
         });
       }
     },
-    [status, stopTracks],
+    [status, langs, stopTracks],
   );
 
   const endRecording = useCallback(() => {
     const recorder = mediaRecorderRef.current;
     if (recorder && recorder.state === "recording") {
       recorder.stop();
+    } else {
+      releasedEarlyRef.current = true;
     }
   }, []);
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
       {SIDES.map((side) => {
+        const lang = langs[side.key];
+        const busy = status.kind !== "idle" && status.kind !== "error";
         const isRecording =
-          status.kind === "recording" && status.side === side.key;
+          (status.kind === "recording" || status.kind === "starting") &&
+          status.side === side.key;
         const isProcessing =
           status.kind === "processing" && status.side === side.key;
         const isError = status.kind === "error" && status.side === side.key;
-        const disabled =
-          (status.kind === "recording" && status.side !== side.key) ||
-          (status.kind === "processing" && status.side !== side.key);
+        const disabled = busy && status.side !== side.key;
 
         const theirTranslation =
-          lastTurn && lastTurn.direction !== side.direction
-            ? lastTurn
-            : null;
+          lastTurn && lastTurn.from !== side.key ? lastTurn : null;
 
         return (
           <section
@@ -172,18 +189,35 @@ export function InterpreterClient() {
             className="dl-panel flex flex-col"
             style={{ borderTopColor: side.accent }}
           >
-            <header className="dl-panel__head">
+            <header className="dl-panel__head flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="dl-panel__title">{side.label}</h2>
                 <p className="dl-panel__desc">
-                  {side.sublabel} · speaks {side.speaks}
+                  {LANGUAGES[lang].native} · speaks {LANGUAGES[lang].name}
                 </p>
               </div>
+              <label className="flex items-center gap-2 text-xs uppercase tracking-widest text-[var(--ink-3)]">
+                Speaks
+                <select
+                  value={lang}
+                  onChange={(e) => setSideLang(side.key, e.target.value as LangCode)}
+                  disabled={busy}
+                  aria-label={`${side.label} language`}
+                  className="rounded border border-[var(--rule-soft)] bg-[var(--surface)] px-2 py-1 text-sm normal-case tracking-normal text-[var(--ink)] disabled:opacity-50"
+                >
+                  {LANG_CODES.map((code) => (
+                    <option key={code} value={code}>
+                      {LANGUAGES[code].name}
+                    </option>
+                  ))}
+                </select>
+              </label>
             </header>
 
             <div className="flex flex-1 flex-col gap-4 p-4">
               <HoldButton
                 side={side}
+                speaks={LANGUAGES[lang].name}
                 isRecording={isRecording}
                 isProcessing={isProcessing}
                 disabled={disabled}
@@ -193,7 +227,8 @@ export function InterpreterClient() {
 
               {theirTranslation && (
                 <IncomingBlock
-                  direction={theirTranslation.direction}
+                  source={theirTranslation.source}
+                  target={theirTranslation.target}
                   sourceTranscript={theirTranslation.sourceTranscript}
                   translation={theirTranslation.translation}
                 />
@@ -240,9 +275,11 @@ export function InterpreterClient() {
                     className="rounded border border-[var(--rule-soft)] p-3"
                   >
                     <p className="text-xs uppercase tracking-widest text-[var(--ink-3)]">
-                      {turn.direction === "hi->en"
+                      {turn.from === "caller"
                         ? "Caller → Restaurant"
-                        : "Restaurant → Caller"}
+                        : "Restaurant → Caller"}{" "}
+                      · {LANGUAGES[turn.source].name} →{" "}
+                      {LANGUAGES[turn.target].name}
                     </p>
                     <p className="mt-1">
                       <span className="text-[var(--ink-3)]">heard:</span>{" "}
@@ -264,6 +301,7 @@ export function InterpreterClient() {
 
 function HoldButton({
   side,
+  speaks,
   isRecording,
   isProcessing,
   disabled,
@@ -271,6 +309,7 @@ function HoldButton({
   onRelease,
 }: {
   side: SideConfig;
+  speaks: string;
   isRecording: boolean;
   isProcessing: boolean;
   disabled: boolean;
@@ -288,12 +327,25 @@ function HoldButton({
     }
     onRelease();
   };
+  // Hold-to-talk from the keyboard too: Space or Enter down starts, up sends.
+  const isTalkKey = (e: ReactKeyboardEvent) => e.key === " " || e.key === "Enter";
+  const handleKeyDown = (e: ReactKeyboardEvent<HTMLButtonElement>) => {
+    if (!isTalkKey(e)) return;
+    e.preventDefault();
+    if (e.repeat || disabled || isProcessing || isRecording) return;
+    onPress();
+  };
+  const handleKeyUp = (e: ReactKeyboardEvent<HTMLButtonElement>) => {
+    if (!isTalkKey(e)) return;
+    e.preventDefault();
+    onRelease();
+  };
 
   const label = isProcessing
     ? "Translating…"
     : isRecording
       ? "Release to send"
-      : `Hold to speak ${side.speaks}`;
+      : `Hold to speak ${speaks}`;
 
   return (
     <button
@@ -301,6 +353,8 @@ function HoldButton({
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
+      onKeyDown={handleKeyDown}
+      onKeyUp={handleKeyUp}
       onPointerLeave={(e) => {
         if (isRecording) handlePointerUp(e);
       }}
@@ -327,16 +381,18 @@ function HoldButton({
 }
 
 function IncomingBlock({
-  direction,
+  source,
+  target,
   sourceTranscript,
   translation,
 }: {
-  direction: Direction;
+  source: LangCode;
+  target: LangCode;
   sourceTranscript: string;
   translation: string;
 }) {
-  const sourceLang = direction === "hi->en" ? "Hindi" : "English";
-  const targetLang = direction === "hi->en" ? "English" : "Hindi";
+  const sourceLang = LANGUAGES[source].name;
+  const targetLang = LANGUAGES[target].name;
   return (
     <div className="rounded border border-[var(--rule-soft)] bg-[var(--surface)] p-3 text-sm">
       <p className="text-xs uppercase tracking-widest text-[var(--ink-3)]">
@@ -370,7 +426,9 @@ function pickMimeType(): string | undefined {
 
 async function uploadAndTranslate(
   blob: Blob,
-  direction: Direction,
+  from: SideKey,
+  source: LangCode,
+  target: LangCode,
 ): Promise<Turn> {
   const ext = blob.type.includes("mp4")
     ? "m4a"
@@ -379,15 +437,17 @@ async function uploadAndTranslate(
       : "webm";
   const form = new FormData();
   form.append("audio", new File([blob], `utterance.${ext}`, { type: blob.type }));
-  form.append("direction", direction);
+  form.append("source", source);
+  form.append("target", target);
 
   const res = await fetch("/api/interpreter/translate", {
     method: "POST",
     body: form,
   });
-  const data = (await res.json()) as
+  const data = (await res.json().catch(() => ({
+    error: `Request failed (${res.status}).`,
+  }))) as
     | {
-        direction: Direction;
         sourceTranscript: string;
         translation: string;
         audioBase64: string;
@@ -401,7 +461,9 @@ async function uploadAndTranslate(
 
   const audioUrl = `data:${data.audioMimeType};base64,${data.audioBase64}`;
   return {
-    direction: data.direction,
+    from,
+    source,
+    target,
     sourceTranscript: data.sourceTranscript,
     translation: data.translation,
     audioUrl,
