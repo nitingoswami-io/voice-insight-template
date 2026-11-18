@@ -38,8 +38,9 @@ describe("interpreterVoice", () => {
 });
 
 describe("access gate", () => {
-  it("covers the metered interpreter routes", () => {
-    expect(isProtectedPath("/interpreter")).toBe(true);
+  it("covers the metered interpreter route, not the page", () => {
+    // The page stays browsable; only the call that spends credit is gated.
+    expect(isProtectedPath("/interpreter")).toBe(false);
     expect(isProtectedPath("/api/interpreter/translate")).toBe(true);
   });
 });

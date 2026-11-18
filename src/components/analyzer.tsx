@@ -16,6 +16,7 @@ import { TalkShare } from "@/components/charts/talk-share";
 import { HeroScore, Meter, Stat } from "@/components/charts/stat";
 import { CategoryScores } from "@/components/charts/category-scores";
 import { LockButton } from "@/components/lock-button";
+import { AccessNeeded, checkAccess, useDemoAccess } from "@/components/demo-access";
 import { PLATFORM_MAX_BYTES, formatMb } from "@/lib/limits";
 import {
   formatDuration,
@@ -97,6 +98,7 @@ export function Analyzer({
   canUnlock?: boolean;
 }) {
   const capped = maxBytes < PLATFORM_MAX_BYTES;
+  const access = useDemoAccess();
   const inputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const rowRefs = useRef<Record<number, HTMLLIElement | null>>({});
@@ -172,7 +174,7 @@ export function Analyzer({
   }
 
   async function analyse() {
-    if (!file) return;
+    if (!file || !access.ensure()) return;
     setError(null);
     setResult(null);
     setIsSample(false);
@@ -184,15 +186,22 @@ export function Analyzer({
         method: "POST",
         body: file,
       });
-      if (!started.ok) throw new Error((await started.json()).error);
-      const { id } = (await started.json()) as { id: string };
+      const startedBody = await started.json();
+      if (!started.ok) {
+        checkAccess(startedBody);
+        throw new Error(startedBody.error);
+      }
+      const { id } = startedBody as { id: string };
 
       setStage("transcribing");
       for (;;) {
         await sleep(3000);
         const res = await fetch(`/api/status?id=${id}`);
         const status = await res.json();
-        if (!res.ok) throw new Error(status.error);
+        if (!res.ok) {
+          checkAccess(status);
+          throw new Error(status.error);
+        }
         if (status.state === "failed") throw new Error(status.error);
         if (status.state === "ready") break;
       }
@@ -204,12 +213,17 @@ export function Analyzer({
         body: JSON.stringify({ id }),
       });
       const payload = await res.json();
-      if (!res.ok) throw new Error(payload.error);
+      if (!res.ok) {
+        checkAccess(payload);
+        throw new Error(payload.error);
+      }
 
       setResult(payload as Result);
       setStage("done");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong");
+      // Out of credit or no pass: the access dialog explains, not a raw error.
+      if (e instanceof AccessNeeded) access.open(e.reason);
+      else setError(e instanceof Error ? e.message : "Something went wrong");
       setStage("idle");
     }
   }
@@ -268,7 +282,7 @@ export function Analyzer({
                 <>
                   {" "}
                   <a href="/unlock" className="text-[var(--accent)] hover:underline">
-                    Have an access code?
+                    Have an access link or code?
                   </a>
                 </>
               )}

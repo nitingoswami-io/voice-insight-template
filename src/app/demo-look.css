@@ -401,3 +401,197 @@
     scroll-behavior: smooth;
   }
 }
+
+/* ------------------------------------------- way home (masthead + footer) */
+
+.dl-masthead__strip a.dl-backlink {
+  padding: 2px 8px;
+  border: var(--rule-thin) solid var(--rule);
+  border-radius: 2px;
+  color: var(--ink);
+}
+
+.dl-masthead__strip a.dl-backlink:hover {
+  border-color: var(--news-red);
+  background: var(--news-red);
+  color: var(--paper);
+}
+
+.dl-footer .dl-label a {
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+}
+
+/* ----------------------------------- demo access (docs/DEMO_ACCESS.md) */
+
+.dl-notice {
+  border-bottom: var(--rule-thin) solid var(--rule-soft);
+  background: var(--paper-2);
+}
+
+.dl-notice__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding-block: 8px;
+}
+
+.dl-notice__kicker {
+  color: var(--news-red);
+}
+
+.dl-notice__text {
+  margin: 0;
+  font-family: var(--dl-serif);
+  font-size: 15px;
+  color: var(--ink-2);
+}
+
+.dl-notice__inner .dl-spacer {
+  margin-left: auto;
+}
+
+.dl-notice__link {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: var(--dl-sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--rule-soft);
+  text-underline-offset: 3px;
+}
+
+.dl-notice__link:hover {
+  color: var(--news-red);
+  text-decoration-color: currentColor;
+}
+
+.dl-notice__cta {
+  min-height: 30px;
+}
+
+.dl-dialog {
+  width: min(460px, calc(100vw - 32px));
+  padding: 20px 24px 18px;
+  border: var(--rule-thin) solid var(--rule);
+  border-top: var(--rule-thick) solid var(--news-red);
+  border-radius: 2px;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 18px 48px rgb(0 0 0 / 0.28);
+}
+
+.dl-dialog::backdrop {
+  background: rgb(20 20 20 / 0.55);
+}
+
+.dl-dialog__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dl-dialog__kicker {
+  color: var(--news-red);
+}
+
+.dl-dialog__close {
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--ink-3);
+}
+
+.dl-dialog__close:hover {
+  color: var(--news-red);
+}
+
+.dl-dialog__title {
+  margin: 8px 0 6px;
+  font-family: var(--dl-display);
+  font-weight: 900;
+  font-size: 26px;
+  line-height: 1.1;
+}
+
+.dl-dialog__body {
+  margin: 0 0 14px;
+  font-family: var(--dl-serif);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+.dl-dialog__form {
+  display: grid;
+  gap: 10px;
+}
+
+.dl-field {
+  display: grid;
+  gap: 4px;
+}
+
+.dl-input {
+  width: 100%;
+  min-height: 38px;
+  padding: 0 10px;
+  border: var(--rule-thin) solid var(--rule-soft);
+  border-radius: 2px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--dl-sans);
+  font-size: 15px;
+}
+
+.dl-input:focus {
+  outline: 2px solid var(--news-red);
+  outline-offset: -1px;
+}
+
+.dl-honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.dl-dialog__error {
+  margin: 0;
+  font-size: 13px;
+  color: var(--bad);
+}
+
+.dl-dialog__fine {
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.dl-dialog__fine a {
+  color: inherit;
+  text-underline-offset: 3px;
+}
+
+.dl-dialog__paste {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: var(--rule-thin) solid var(--rule-soft);
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.dl-dialog__paste summary {
+  cursor: pointer;
+  margin-bottom: 8px;
+}

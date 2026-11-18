@@ -11,8 +11,10 @@ what went well, what to coach — where **every observation carries the verbatim
 quote that backs it**. Click a quote and the audio jumps to that moment.
 
 **Live demo:** [voice-insight.nitingoswami.io](https://voice-insight.nitingoswami.io) — click
-**View sample output** on `/demo` for a free walkthrough, or upload a short
-clip (the public demo caps file size to keep API costs bounded).
+**View sample output** on `/demo` for a free walkthrough. Running your own
+recording spends paid API credit, so the live demo asks for your email and sends
+a free access link (see [docs/DEMO_ACCESS.md](docs/DEMO_ACCESS.md)). Or run it
+yourself with your own keys.
 
 It is meant to be read, run and forked. Swap the rubric and the prompt, and the
 same pipeline can review sales calls, interviews, lectures or clinic visits.
@@ -152,20 +154,26 @@ Add the environment variables in your host's dashboard:
 |---|---|---|
 | `ASSEMBLYAI_API_KEY` | yes | Transcription |
 | `XAI_API_KEY` | yes | Analysis |
-| `ACCESS_CODE` | recommended for public URLs | Puts a shared code in front of `/demo` and the API routes |
+| `DEMO_ACCESS_SECRET` | recommended for public URLs | Gate the metered API routes; visitors request an access link by email |
+| `RESEND_API_KEY`, `ACCESS_EMAIL_FROM`, `ACCESS_NOTIFY_EMAIL` | with `DEMO_ACCESS_SECRET` | Send the links, and copy you on each request and out-of-credit alert |
+| `ACCESS_CODE` | no | A shared code that also unlocks the gate |
 | `PUBLIC_MAX_MB` | no | Public mode: open to everyone, uploads capped at this size |
 | `XAI_MODEL`, `XAI_BASE_URL` | no | Model and endpoint override |
 
-**Set `ACCESS_CODE` before you share a public URL.** Without it, anyone who
-finds the deployment can spend your API credit. The gate is off by default so a
-fresh fork works on first deploy. Use a long random value, for example
-`openssl rand -base64 24`.
+**Set `DEMO_ACCESS_SECRET` (or `ACCESS_CODE`) before you share a public URL.**
+Without it, anyone who finds the deployment can spend your API credit. The gate
+is off by default so a fresh fork works on first deploy. Use a long random
+value, for example `openssl rand -base64 32`. The pages stay browsable either
+way; only the API routes that spend credit are gated, and when a provider runs
+out of credit visitors see a "demo paused" dialog instead of the raw error. The
+full pattern, shared by every demo on nitingoswami.io, is in
+[docs/DEMO_ACCESS.md](docs/DEMO_ACCESS.md).
 
-| `ACCESS_CODE` | `PUBLIC_MAX_MB` | Result |
+| Secret or code | `PUBLIC_MAX_MB` | Result |
 |---|---|---|
 | unset | unset | Open to everyone, 4.5 MB uploads (local development) |
-| set | unset | Private: `/demo` and the API need the code |
-| set | set | Public demo: open to everyone, capped uploads; the code lifts the cap |
+| set | unset | Gated: running a recording needs an access link or the code |
+| set | set | Public demo: open to everyone, capped uploads; a pass lifts the cap |
 | unset | set | Open to everyone, capped uploads for all |
 
 ### Running a public demo with a spending limit

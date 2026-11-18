@@ -17,6 +17,8 @@ import { PLATFORM_MAX_BYTES } from "@/lib/limits";
 beforeEach(() => {
   vi.stubEnv("ACCESS_CODE", "");
   delete process.env.ACCESS_CODE;
+  vi.stubEnv("DEMO_ACCESS_SECRET", "");
+  delete process.env.DEMO_ACCESS_SECRET;
   vi.stubEnv("PUBLIC_MAX_MB", "");
   delete process.env.PUBLIC_MAX_MB;
 });
@@ -28,27 +30,35 @@ const setNodeEnv = (value: string) => vi.stubEnv("NODE_ENV", value);
 const setCode = (value: string) => vi.stubEnv("ACCESS_CODE", value);
 
 describe("isProtectedPath", () => {
-  it("covers the demo and every route that calls a metered API", () => {
+  it("covers every route that calls a metered API", () => {
     for (const p of [
-      "/demo",
-      "/demo/anything",
       "/api/transcribe",
       "/api/status",
       "/api/insight",
+      "/api/interpreter/translate",
     ]) {
       expect(isProtectedPath(p)).toBe(true);
     }
   });
 
-  it("leaves the overview and the unlock flow open", () => {
-    // Gating the unlock route would leave no way in.
-    for (const p of ["/", "/unlock", "/api/access"]) {
+  it("leaves the pages, the overview and the unlock flow open", () => {
+    // Gating the unlock route would leave no way in; the demo pages stay
+    // browsable so visitors see the sample output before asking for a link.
+    for (const p of [
+      "/",
+      "/demo",
+      "/interpreter",
+      "/unlock",
+      "/api/access",
+      "/api/access/request",
+      "/api/access/pass",
+    ]) {
       expect(isProtectedPath(p)).toBe(false);
     }
   });
 
   it("does not treat a lookalike prefix as protected", () => {
-    expect(isProtectedPath("/demonstration")).toBe(false);
+    expect(isProtectedPath("/api/statuses")).toBe(false);
     expect(isProtectedPath("/api/transcribe-something-else")).toBe(false);
   });
 });
@@ -77,6 +87,12 @@ describe("gateActive", () => {
     setNodeEnv("development");
     setCode("let-me-in-please");
     expect(gateActive()).toBe(true);
+  });
+
+  it("is active with only DEMO_ACCESS_SECRET set (email links, no code)", () => {
+    vi.stubEnv("DEMO_ACCESS_SECRET", "s".repeat(32));
+    expect(gateActive()).toBe(true);
+    expect(accessConfigured()).toBe(false);
   });
 });
 
@@ -149,9 +165,10 @@ describe("isValidCode", () => {
 });
 
 describe("safeNext", () => {
-  it("keeps a legitimate protected destination", () => {
+  it("keeps a legitimate demo page", () => {
     expect(safeNext("/demo")).toBe("/demo");
     expect(safeNext("/demo?x=1")).toBe("/demo?x=1");
+    expect(safeNext("/interpreter")).toBe("/interpreter");
   });
 
   it("refuses an absolute URL — this is the open-redirect guard", () => {
@@ -170,10 +187,11 @@ describe("safeNext", () => {
     expect(safeNext("/demo\nLocation: https://evil.example")).toBe("/demo");
   });
 
-  it("refuses a same-origin path the gate does not protect", () => {
+  it("refuses a same-origin path that is not a demo page", () => {
     // No point bouncing someone to a public page through the unlock flow.
     expect(safeNext("/unlock")).toBe("/demo");
     expect(safeNext("/")).toBe("/demo");
+    expect(safeNext("/api/insight")).toBe("/demo");
   });
 
   it("falls back when nothing was given", () => {

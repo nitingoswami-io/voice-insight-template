@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 import {
   ACCESS_COOKIE,
-  ACCESS_MAX_AGE,
   accessConfigured,
   isValidCode,
   issueToken,
 } from "@/lib/access";
+import { setAccessCookie } from "@/lib/access-cookie";
 
 /**
- * Exchange the access code for a cookie.
+ * Exchange the shared access code for a pass cookie (sub "access-code").
  *
  * Deliberately not under a protected prefix — this is the door, so it has to be
  * reachable from outside.
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          "No ACCESS_CODE is set on this deployment, so there is nothing to unlock — the demo is already open.",
+          "No ACCESS_CODE is set on this deployment. Request a link by email instead.",
       },
       { status: 409 },
     );
@@ -42,13 +42,7 @@ export async function POST(request: Request) {
 
   const token = await issueToken();
   const response = NextResponse.json({ ok: true });
-  response.cookies.set(ACCESS_COOKIE, token!, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: ACCESS_MAX_AGE,
-  });
+  setAccessCookie(response, token!);
   return response;
 }
 

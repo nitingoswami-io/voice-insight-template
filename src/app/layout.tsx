@@ -46,7 +46,12 @@ export default function RootLayout({
           status={cap !== null ? `Public demo · files up to ${formatMb(cap)}` : undefined}
         />
         <main className="dl-wrap flex-1">{children}</main>
-        <DemoFooter name={PROJECT_NAME} repoUrl={REPO_URL} designDocUrl={DESIGN_DOC_URL} />
+        <DemoFooter
+          name={PROJECT_NAME}
+          repoUrl={REPO_URL}
+          designDocUrl={DESIGN_DOC_URL}
+          siteUrl={SITE_URL}
+        />
       </body>
     </html>
   );
