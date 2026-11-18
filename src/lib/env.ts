@@ -33,15 +33,21 @@ export const env = {
 /** Model used for call analysis. */
 export const ANALYSIS_MODEL = process.env.XAI_MODEL ?? "grok-4.5";
 
-/** Models and voices used by the Hindi↔English interpreter demo. */
+/** Models and voices used by the voice interpreter demo. */
 export const INTERPRETER_STT_MODEL =
   process.env.INTERPRETER_STT_MODEL ?? "whisper-1";
 export const INTERPRETER_TRANSLATE_MODEL =
   process.env.INTERPRETER_TRANSLATE_MODEL ?? "gpt-4o-mini";
 export const INTERPRETER_TTS_MODEL =
   process.env.INTERPRETER_TTS_MODEL ?? "eleven_multilingual_v2";
-/** ElevenLabs voice IDs. The default is Rachel — a multilingual voice. */
-export const INTERPRETER_VOICE_EN =
-  process.env.INTERPRETER_VOICE_EN ?? "21m00Tcm4TlvDq8ikWAM";
-export const INTERPRETER_VOICE_HI =
-  process.env.INTERPRETER_VOICE_HI ?? "21m00Tcm4TlvDq8ikWAM";
+
+/** Default ElevenLabs voice: Rachel, a multilingual voice. */
+const DEFAULT_VOICE = "21m00Tcm4TlvDq8ikWAM";
+
+/**
+ * ElevenLabs voice id for a language, from `INTERPRETER_VOICE_<CODE>`
+ * (e.g. `INTERPRETER_VOICE_FR`), falling back to the multilingual default.
+ */
+export function interpreterVoice(lang: string): string {
+  return process.env[`INTERPRETER_VOICE_${lang.toUpperCase()}`] || DEFAULT_VOICE;
+}

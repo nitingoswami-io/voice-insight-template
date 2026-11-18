@@ -1,15 +1,19 @@
 import { NextResponse } from "next/server";
-import { interpret, type Direction } from "@/lib/interpreter/pipeline";
-import { PLATFORM_MAX_BYTES, formatMb } from "@/lib/limits";
+import { cookies } from "next/headers";
+import { interpret } from "@/lib/interpreter/pipeline";
+import { LANG_CODES, isLangCode } from "@/lib/interpreter/languages";
+import { ACCESS_COOKIE, uploadLimitFor } from "@/lib/access";
+import { formatMb } from "@/lib/limits";
 
 export const maxDuration = 60;
 
 /**
- * Run one hop of the Hindi↔English interpreter.
+ * Run one hop of the voice interpreter.
  *
  * Multipart form in:
- *   - audio:     the recorded utterance (any format Whisper accepts)
- *   - direction: "hi->en" | "en->hi"
+ *   - audio:  the recorded utterance (any format Whisper accepts)
+ *   - source: language spoken in the audio, e.g. "hi" | "fr" | "en"
+ *   - target: language the other side hears; must differ from `source`
  *
  * JSON out:
  *   - sourceTranscript: what Whisper heard
@@ -23,34 +27,40 @@ export async function POST(request: Request) {
     form = await request.formData();
   } catch {
     return NextResponse.json(
-      { error: "Expected multipart/form-data with 'audio' and 'direction'." },
+      { error: "Expected multipart/form-data with 'audio', 'source' and 'target'." },
       { status: 400 },
     );
   }
 
   const audio = form.get("audio");
-  const direction = form.get("direction");
+  const source = form.get("source");
+  const target = form.get("target");
 
   if (!(audio instanceof File) || audio.size === 0) {
     return NextResponse.json({ error: "Missing or empty 'audio' file." }, { status: 400 });
   }
-  if (direction !== "hi->en" && direction !== "en->hi") {
+  if (!isLangCode(source) || !isLangCode(target) || source === target) {
     return NextResponse.json(
-      { error: "Field 'direction' must be 'hi->en' or 'en->hi'." },
+      {
+        error: `Fields 'source' and 'target' must be two different languages from: ${LANG_CODES.join(", ")}.`,
+      },
       { status: 400 },
     );
   }
-  if (audio.size > PLATFORM_MAX_BYTES) {
+  // Same cap as the analyzer: public mode bounds what an anonymous visitor
+  // can send, a valid access cookie lifts it to the platform limit.
+  const limit = await uploadLimitFor((await cookies()).get(ACCESS_COOKIE)?.value);
+  if (audio.size > limit) {
     return NextResponse.json(
       {
-        error: `Recording is ${formatMb(audio.size)}. The function request body caps at ${formatMb(PLATFORM_MAX_BYTES)}. Keep utterances under ~45s or use a lower-bitrate recorder.`,
+        error: `Recording is ${formatMb(audio.size)}; the limit is ${formatMb(limit)}. Keep utterances short (a few sentences).`,
       },
       { status: 413 },
     );
   }
 
   try {
-    const result = await interpret({ audio, direction: direction as Direction });
+    const result = await interpret({ audio, source, target });
     return NextResponse.json(result);
   } catch (error) {
     return NextResponse.json(

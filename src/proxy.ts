@@ -40,5 +40,5 @@ export async function proxy(request: NextRequest) {
 export const config = {
   // Matched broadly, then narrowed by isProtectedPath so the protected list
   // lives in one place next to the reasoning for it.
-  matcher: ["/demo/:path*", "/api/:path*"],
+  matcher: ["/demo/:path*", "/interpreter/:path*", "/api/:path*"],
 };

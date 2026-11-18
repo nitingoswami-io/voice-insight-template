@@ -2,7 +2,7 @@
  * Optional access gate for the routes that call metered APIs.
  *
  * `/api/transcribe` and `/api/insight` spend credit on your AssemblyAI and xAI
- * accounts. Run locally, that is fine. Deploy a fork to a public URL and anyone
+ * accounts; `/api/interpreter/*` spends OpenAI and ElevenLabs credit. Run locally, that is fine. Deploy a fork to a public URL and anyone
  * who finds it can spend your credit. Setting `ACCESS_CODE` puts a shared code
  * in front of those routes; leaving it unset keeps everything open.
  *
@@ -33,6 +33,8 @@ export const PROTECTED_PREFIXES = [
   "/api/transcribe",
   "/api/status",
   "/api/insight",
+  "/interpreter",
+  "/api/interpreter",
 ];
 
 export function isProtectedPath(pathname: string): boolean {

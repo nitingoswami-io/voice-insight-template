@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { InterpreterClient } from "./interpreter-client";
 
 export const metadata: Metadata = {
-  title: "Hindi↔English voice interpreter",
+  title: "Voice interpreter",
   description:
-    "A two-way voice interpreter demo — speak Hindi, the other side hears English, and vice versa.",
+    "A two-way voice interpreter demo — speak Hindi or French, the other side hears English, and vice versa.",
 };
 
 export default function InterpreterPage() {
@@ -15,11 +15,12 @@ export default function InterpreterPage() {
           Voice demo
         </p>
         <h1 className="mt-1 font-[var(--dl-display,serif)] text-3xl text-[var(--ink)]">
-          Hindi ↔ English voice interpreter
+          Live voice interpreter
         </h1>
         <p className="mt-3 max-w-[60ch] text-[var(--ink-2)]">
-          Imagine calling a US restaurant without speaking English. Hold the
-          button on your side, speak, and the other side hears the translation.
+          Imagine calling a US restaurant without speaking English. Pick a
+          language for each side (Hindi, French or English), hold the button on
+          your side, speak, and the other side hears the translation.
           Each hop runs <strong>Whisper → GPT-4o-mini → ElevenLabs</strong> in a
           single request. Latency is deliberately not optimised — the three
           stages are shown so you can see exactly what the pipeline is doing.
