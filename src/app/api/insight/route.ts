@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { providerErrorResponse } from "@/lib/provider-errors";
 import { assemblyAi } from "@/lib/providers/asr-assemblyai";
 import { analyseCall } from "@/lib/analysis/run";
 import { guessAgentSpeaker } from "@/lib/metrics";
@@ -59,9 +60,6 @@ export async function POST(request: Request) {
       ...analysis,
     });
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Analysis failed" },
-      { status: 500 },
-    );
+    return providerErrorResponse(error, "AssemblyAI or xAI", "Analysis failed");
   }
 }

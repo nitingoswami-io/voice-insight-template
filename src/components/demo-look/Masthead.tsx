@@ -11,12 +11,15 @@ import { StageStrip, type Stage } from "./StageStrip";
  */
 export type MastheadLink = { href: string; label: string };
 
+/** The author's site. Every demo links home from its masthead and footer. */
+export const SITE_URL = "https://www.nitingoswami.io";
+
 export function Masthead({
   name,
   dek,
   stages,
   links,
-  siteUrl,
+  siteUrl = SITE_URL,
   postUrl,
   homeHref = "/",
   status,
@@ -26,9 +29,9 @@ export function Masthead({
   dek: string;
   stages?: Stage[];
   links?: MastheadLink[];
-  /** The Inference Times home. Leave unset until the URL is confirmed. */
+  /** The Inference Times home. Defaults to nitingoswami.io. */
   siteUrl?: string;
-  /** This demo's post on the site. */
+  /** This demo's post on the site ("Demo desk" links here, else to /demos). */
   postUrl?: string;
   homeHref?: string;
   /** Short right-hand note, e.g. "Public demo · files up to 1.5 MB". */
@@ -41,9 +44,12 @@ export function Masthead({
     <header className="dl-masthead">
       <div className="dl-wrap">
         <div className="dl-masthead__strip dl-label">
-          {siteUrl ? <a href={siteUrl}>The Inference Times</a> : <span>The Inference Times</span>}
+          <a className="dl-backlink" href={siteUrl}>
+            <span aria-hidden>←</span> {new URL(siteUrl).hostname.replace(/^www\./, "")}
+          </a>
+          <a href={siteUrl}>The Inference Times</a>
           <span aria-hidden>·</span>
-          {postUrl ? <a href={postUrl}>Demo desk</a> : <span>Demo desk</span>}
+          <a href={postUrl ?? `${siteUrl}/demos`}>Demo desk</a>
           <span className="dl-spacer" />
           {status && <span>{status}</span>}
           <ThemeToggle />

@@ -110,7 +110,7 @@ Each quote is fuzzy-matched against the word stream (normalised Levenshtein simi
 | `src/app/api/status/route.ts` | Returns `working`, `ready` or `failed` for a job id. |
 | `src/app/api/insight/route.ts` | Fetches the finished transcript, guesses the agent speaker, runs `analyseCall`. `maxDuration = 300`. |
 | `src/app/api/access/route.ts` | `POST` exchanges the code for an HMAC cookie (7 days); `DELETE` clears it. |
-| `src/proxy.ts` | Redirects or returns `401` for `/demo` and the three API routes when the gate is active. |
+| `src/proxy.ts` | Returns `401 {code: "access_required"}` for the metered API routes when the gate is active (see [DEMO_ACCESS.md](DEMO_ACCESS.md)). |
 | `src/lib/access.ts` | Gate state, public mode (`PUBLIC_MAX_MB`), per-visitor upload limit, HMAC tokens, constant-time compare, open-redirect guard. |
 | `src/lib/providers/asr.ts` · `asr-assemblyai.ts` | The `AsrProvider` interface and its AssemblyAI implementation, normalised to words, utterances, language and sentiment. |
 | `src/lib/providers/llm.ts` | `structuredCall()`: OpenAI SDK against `XAI_BASE_URL` (default `https://api.x.ai/v1`), `temperature: 0`, `response_format: json_schema` with `strict: true`. |
@@ -159,7 +159,7 @@ The user prompt adds the detected language, the duration, the rubric categories 
 | `POST` | `/api/access` | `{"code"}` | `{"ok":true}` + `Set-Cookie: voice_insight_access` |
 | `DELETE` | `/api/access` | n/a | `{"ok":true}`, cookie cleared |
 
-Errors: `400` for an empty body, a missing `id` or invalid JSON; `401` for a missing access cookie on a gated route or a wrong code; `409` when posting a code to a deployment with no `ACCESS_CODE`; `413` for a file over the visitor's limit; `422` when no speech was detected; `500` with a readable `error` for provider or schema-validation failures.
+Errors: `400` for an empty body, a missing `id` or invalid JSON; `401` (`code: "access_required"`) for a missing access pass on a gated route or a wrong code; `503` (`code: "demo_unavailable"`) when a provider is out of credit or its key is rejected; `409` when posting a code to a deployment with no `ACCESS_CODE`; `413` for a file over the visitor's limit; `422` when no speech was detected; `500` with a readable `error` for provider or schema-validation failures.
 
 ## 6. Data model
 
@@ -186,7 +186,7 @@ Nothing is persisted, so there is no schema to migrate. The shapes live in TypeS
 voice-insight-template/
 ├── README.md                       quick start, pipeline figure, deploy + spending limits
 ├── CONTRIBUTING.md · LICENSE       MIT
-├── .env.example                    ASSEMBLYAI_API_KEY, XAI_API_KEY, ACCESS_CODE, PUBLIC_MAX_MB
+├── .env.example                    ASSEMBLYAI_API_KEY, XAI_API_KEY, DEMO_ACCESS_SECRET, ACCESS_CODE, PUBLIC_MAX_MB
 ├── .github/                        CI (lint · typecheck · test · build), issue + PR templates
 ├── docs/
 │   ├── ARCHITECTURE.md             stage-by-stage walkthrough
@@ -218,7 +218,7 @@ npm run dev                    # http://localhost:3000
 | `/demo` → **View sample output** | A scored call with verified quotes, and one claim under Provenance discarded as `quote_not_found` ("Engineer Tuesday morning ko definitely aa jayega, I guarantee it."). |
 | Upload a 10-minute support call (mono MP3) | About 50 s end to end; every coaching point carries a quote that plays the right moment when clicked. |
 | `PUBLIC_MAX_MB=0.001` and a 4 KB upload | `413` with "The public demo accepts up to …". With a valid access cookie the same upload passes the cap. |
-| `ACCESS_CODE` set: `POST /api/transcribe` with no cookie | `401` `{"error":"Access code required."}`; `/demo` redirects to `/unlock?next=%2Fdemo`. |
+| `DEMO_ACCESS_SECRET` set: `POST /api/transcribe` with no cookie | `401` with `"code":"access_required"`; `/demo` still loads and shows the access notice. |
 
 ## 10. Next steps
 

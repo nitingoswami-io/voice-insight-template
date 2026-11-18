@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { providerErrorResponse } from "@/lib/provider-errors";
 import { assemblyAi } from "@/lib/providers/asr-assemblyai";
 
 /**
@@ -18,9 +19,6 @@ export async function GET(request: Request) {
   try {
     return NextResponse.json(await assemblyAi.status(id));
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Status check failed" },
-      { status: 500 },
-    );
+    return providerErrorResponse(error, "AssemblyAI", "Status check failed");
   }
 }

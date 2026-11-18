@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { providerErrorResponse } from "@/lib/provider-errors";
 import { cookies } from "next/headers";
 import { interpret } from "@/lib/interpreter/pipeline";
 import { LANG_CODES, isLangCode } from "@/lib/interpreter/languages";
@@ -63,14 +64,6 @@ export async function POST(request: Request) {
     const result = await interpret({ audio, source, target });
     return NextResponse.json(result);
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Interpreter pipeline failed.",
-      },
-      { status: 500 },
-    );
+    return providerErrorResponse(error, "OpenAI or ElevenLabs", "Interpreter pipeline failed.");
   }
 }

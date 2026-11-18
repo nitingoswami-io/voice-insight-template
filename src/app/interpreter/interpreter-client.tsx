@@ -9,6 +9,7 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import { LANGUAGES, LANG_CODES, type LangCode } from "@/lib/interpreter/languages";
+import { AccessNeeded, checkAccess, useDemoAccess } from "@/components/demo-access";
 
 type SideKey = "caller" | "restaurant";
 
@@ -41,6 +42,7 @@ type Status =
   | { kind: "error"; side: SideKey; message: string };
 
 export function InterpreterClient() {
+  const access = useDemoAccess();
   const [status, setStatus] = useState<Status>({ kind: "idle" });
   const [lastTurn, setLastTurn] = useState<Turn | null>(null);
   const [history, setHistory] = useState<Turn[]>([]);
@@ -93,6 +95,8 @@ export function InterpreterClient() {
   const beginRecording = useCallback(
     async (side: SideConfig) => {
       if (status.kind !== "idle" && status.kind !== "error") return;
+      // No pass yet: ask for one before opening the microphone.
+      if (!access.ensure()) return;
       const source = langs[side.key];
       const target = langs[otherSide(side.key)];
       releasedEarlyRef.current = false;
@@ -133,6 +137,11 @@ export function InterpreterClient() {
             setHistory((h) => [...h, turn]);
             setStatus({ kind: "idle" });
           } catch (e) {
+            if (e instanceof AccessNeeded) {
+              access.open(e.reason);
+              setStatus({ kind: "idle" });
+              return;
+            }
             setStatus({
               kind: "error",
               side: side.key,
@@ -155,7 +164,7 @@ export function InterpreterClient() {
         });
       }
     },
-    [status, langs, stopTracks],
+    [status, langs, stopTracks, access],
   );
 
   const endRecording = useCallback(() => {
@@ -456,6 +465,7 @@ async function uploadAndTranslate(
     | { error: string };
 
   if (!res.ok || "error" in data) {
+    checkAccess(data);
     throw new Error("error" in data ? data.error : `Request failed (${res.status}).`);
   }
 

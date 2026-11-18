@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
+import { providerErrorResponse } from "@/lib/provider-errors";
 import { cookies } from "next/headers";
 import { assemblyAi } from "@/lib/providers/asr-assemblyai";
 import {
   ACCESS_COOKIE,
-  accessConfigured,
+  gateConfigured,
   uploadLimitFor,
 } from "@/lib/access";
 import { PLATFORM_MAX_BYTES, formatMb } from "@/lib/limits";
@@ -35,8 +36,8 @@ export async function POST(request: Request) {
       const error =
         limit < PLATFORM_MAX_BYTES
           ? `That file is ${size}. The public demo accepts up to ${formatMb(limit)} to keep API costs bounded.` +
-            (accessConfigured()
-              ? " An access code lifts this to 4.5 MB."
+            (gateConfigured()
+              ? " An access link (request one at /unlock) lifts this to 4.5 MB."
               : "") +
             " Or clone the repository and run it with your own keys."
           : `That file is ${size}. This template relays audio through a serverless function, which caps request bodies at 4.5 MB. Use a compressed copy (mono MP3 at 32-64 kbps holds roughly 9-18 minutes).`;
@@ -48,9 +49,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ id: providerId });
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Could not start transcription" },
-      { status: 500 },
-    );
+    return providerErrorResponse(error, "AssemblyAI", "Could not start transcription");
   }
 }

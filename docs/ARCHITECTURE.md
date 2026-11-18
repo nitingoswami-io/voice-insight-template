@@ -210,24 +210,34 @@ it is badged in the UI and left out of aggregates.
 
 ## 6. The optional access gate
 
-**Files:** `src/proxy.ts`, `src/lib/access.ts`, `src/app/unlock/`,
-`src/app/api/access/route.ts`
+**Files:** `src/proxy.ts`, `src/lib/access.ts`, `src/lib/demo-pass.ts`,
+`src/lib/access-request.ts`, `src/lib/provider-errors.ts`, `src/app/unlock/`,
+`src/app/api/access/`, `src/components/demo-access.tsx`
 
-The transcribe, status and insight routes spend credit on your API accounts. If
-`ACCESS_CODE` is set, the proxy (`src/proxy.ts`) requires a cookie before those routes or
-`/demo` will respond. If it is unset, everything is open, which is the default
-for local development and fresh forks.
+This follows the pattern every demo on nitingoswami.io shares,
+[docs/DEMO_ACCESS.md](DEMO_ACCESS.md). The transcribe, status, insight and
+interpreter routes spend credit on your API accounts. If `DEMO_ACCESS_SECRET`
+or `ACCESS_CODE` is set, the proxy (`src/proxy.ts`) answers those routes with
+`401 {code: "access_required"}` unless the request carries a valid access
+cookie. The pages stay public. If neither is set, everything is open, which is
+the default for local development and fresh forks.
 
 Details worth noting if you reuse it:
 
-- The cookie is an HMAC of a fixed payload keyed by the code, so it never
-  contains the code and no session store is needed. Changing the code
-  invalidates every cookie.
+- The cookie holds a signed pass, `v1.<payload>.<HMAC>`, naming the email, the
+  demo and an expiry. No session store is needed, and rotating the secret
+  revokes every pass.
+- Visitors get a pass by email (`POST /api/access/request` sends a magic link to
+  `/unlock?pass=…`, which hands it to `/api/access/pass` to set the cookie) or by
+  typing the shared code.
+- Provider out-of-credit and bad-key errors become `503 {code:
+  "demo_unavailable"}`. The page shows the access dialog rather than the raw
+  provider text, and the owner gets an email at most once an hour.
 - Comparison is constant-time.
-- The `next` redirect parameter only accepts same-origin protected paths, which
+- The `next` redirect parameter only accepts same-origin demo pages, which
   rules out open redirects.
-- It is a shared code, not user authentication, and has no rate limiting. Use a
-  long random value.
+- Rate limits on the request endpoint are in memory, so on serverless they are
+  per instance. Pair them with a firewall rule and a provider budget.
 
 ### Public mode
 
