@@ -51,7 +51,8 @@ model. The teal path is the LLM and verification path.*
 
 The full walkthrough is in **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**,
 and the design document with sequence, state, class and data diagrams is in
-**[docs/DESIGN.md](docs/DESIGN.md)**.
+**[docs/DESIGN.md](docs/DESIGN.md)**. The live Hindi↔English interpreter at `/interpreter` has its own design
+document: **[docs/interpreter/DESIGN.md](docs/interpreter/DESIGN.md)**.
 
 ---
 

@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 330" role="img" aria-label="Class diagram: the client component uses uploadAndTranslate, which posts to the route; the route validates and calls interpret, which reads models, voices and keys from env and returns an InterpretResult." class="sketch" font-family="Kalam, 'Segoe Print', 'Comic Sans MS', cursive" font-size="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+<style>/* standalone viewing only — stripped when the figure is inlined into a page */
+svg{color:#17202b} .sk-bg{fill:#ffffff} .sk-fill{fill:#e3f2ef} .sk-accent{stroke:#0f766e} text.sk-accent{fill:#0f766e;stroke:none}
+@media (prefers-color-scheme:dark){svg{color:#e4e9ef} .sk-bg{fill:#161d25} .sk-fill{fill:#15302d} .sk-accent{stroke:#4fd1c0} text.sk-accent{fill:#4fd1c0}}
+</style>
+<defs>
+<filter id="rough" x="-3%" y="-3%" width="106%" height="106%"><feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="8" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G"/></filter>
+<marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M1.5 1.5 L8.5 5 L1.5 8.5" fill="none" stroke="currentColor" stroke-width="1.4"/></marker>
+<marker id="arrow-accent" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="sk-accent" d="M1.5 1.5 L8.5 5 L1.5 8.5" fill="none" stroke="currentColor" stroke-width="1.4"/></marker>
+</defs>
+<g filter="url(#rough)">
+  <rect x="20" y="30" width="220" height="119" rx="4"/>
+  <path d="M20 58 H240"/>
+  <rect x="20" y="220" width="220" height="68" rx="4"/>
+  <path d="M20 248 H240"/>
+  <rect x="290" y="30" width="220" height="85" rx="4"/>
+  <path d="M290 58 H510"/>
+  <rect class="sk-accent" x="290" y="190" width="220" height="85" rx="4"/>
+  <path d="M290 218 H510" class="sk-accent"/>
+  <rect x="550" y="30" width="240" height="119" rx="4"/>
+  <path d="M550 58 H790"/>
+  <rect x="550" y="220" width="240" height="85" rx="4"/>
+  <path d="M550 248 H790"/>
+  <path d="M130 132 L130 218" marker-end="url(#arrow)"/>
+  <path d="M240 240 L288 240" marker-end="url(#arrow)"/>
+  <path d="M400 98 L400 188" marker-end="url(#arrow)"/>
+  <path d="M512 214 L558 120" class="sk-accent" marker-end="url(#arrow-accent)"/>
+  <path d="M512 262 L558 262" class="sk-accent" marker-end="url(#arrow-accent)"/>
+</g>
+<g fill="currentColor" stroke="none">
+  <text x="130.0" y="94.5" text-anchor="middle"></text>
+  <text x="130.0" y="50" text-anchor="middle" font-weight="700">InterpreterClient</text>
+  <text x="30" y="76" text-anchor="start" font-size="11.5">+status: Status</text>
+  <text x="30" y="93" text-anchor="start" font-size="11.5">+lastTurn: Turn | null</text>
+  <text x="30" y="110" text-anchor="start" font-size="11.5">+history: Turn[]</text>
+  <text x="30" y="127" text-anchor="start" font-size="11.5">-beginRecording(side)</text>
+  <text x="30" y="144" text-anchor="start" font-size="11.5">-endRecording()</text>
+  <text x="130.0" y="259.0" text-anchor="middle"></text>
+  <text x="130.0" y="240" text-anchor="middle" font-weight="700">uploadAndTranslate()</text>
+  <text x="30" y="266" text-anchor="start" font-size="11.5">+(blob, direction): Turn</text>
+  <text x="30" y="283" text-anchor="start" font-size="11.5">-pickMimeType()</text>
+  <text x="400.0" y="77.5" text-anchor="middle"></text>
+  <text x="400.0" y="50" text-anchor="middle" font-weight="700">route POST(request)</text>
+  <text x="300" y="76" text-anchor="start" font-size="11.5">-formData → audio, direction</text>
+  <text x="300" y="93" text-anchor="start" font-size="11.5">-check PLATFORM_MAX_BYTES</text>
+  <text x="300" y="110" text-anchor="start" font-size="11.5">+maxDuration = 60</text>
+  <text x="400.0" y="237.5" text-anchor="middle" class="sk-accent"></text>
+  <text x="400.0" y="210" text-anchor="middle" font-weight="700" class="sk-accent">interpret(input)</text>
+  <text x="300" y="236" text-anchor="start" font-size="11.5">+(InterpretInput): InterpretResult</text>
+  <text x="300" y="253" text-anchor="start" font-size="11.5">-Whisper → GPT → ElevenLabs</text>
+  <text x="300" y="270" text-anchor="start" font-size="11.5">-throws on empty text</text>
+  <text x="670.0" y="94.5" text-anchor="middle"></text>
+  <text x="670.0" y="50" text-anchor="middle" font-weight="700">env.ts</text>
+  <text x="560" y="76" text-anchor="start" font-size="11.5">+openAiKey · elevenLabsKey</text>
+  <text x="560" y="93" text-anchor="start" font-size="11.5">+INTERPRETER_STT_MODEL</text>
+  <text x="560" y="110" text-anchor="start" font-size="11.5">+INTERPRETER_TRANSLATE_MODEL</text>
+  <text x="560" y="127" text-anchor="start" font-size="11.5">+INTERPRETER_TTS_MODEL</text>
+  <text x="560" y="144" text-anchor="start" font-size="11.5">+INTERPRETER_VOICE_EN · _HI</text>
+  <text x="670.0" y="267.5" text-anchor="middle"></text>
+  <text x="670.0" y="240" text-anchor="middle" font-weight="700">InterpretResult</text>
+  <text x="560" y="266" text-anchor="start" font-size="11.5">+direction · sourceTranscript</text>
+  <text x="560" y="283" text-anchor="start" font-size="11.5">+translation · audioBase64</text>
+  <text x="560" y="300" text-anchor="start" font-size="11.5">+audioMimeType</text>
+  <text x="138" y="179.0" text-anchor="start" font-size="12">uses</text>
+  <rect class="sk-bg" x="246" y="222" width="35" height="17" rx="3"/>
+  <text x="264.0" y="234" text-anchor="middle" font-size="12">POST</text>
+  <text x="408" y="147.0" text-anchor="start" font-size="12">calls</text>
+  <rect class="sk-bg" x="519" y="146" width="42" height="17" rx="3"/>
+  <text x="540" y="158" text-anchor="middle" font-size="12" class="sk-accent">reads</text>
+  <rect class="sk-bg" x="508" y="244" width="55" height="17" rx="3"/>
+  <text x="535.0" y="256" text-anchor="middle" font-size="12" class="sk-accent">returns</text>
+</g>
+</svg>

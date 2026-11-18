@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-label="Sequence: one hop. The caller holds the button and speaks; on release the client posts the recording; the route calls Whisper with the source language, GPT-4o-mini to translate, and ElevenLabs to speak, then returns one JSON body that the client plays on the other side." class="sketch" font-family="Kalam, 'Segoe Print', 'Comic Sans MS', cursive" font-size="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+<style>/* standalone viewing only — stripped when the figure is inlined into a page */
+svg{color:#17202b} .sk-bg{fill:#ffffff} .sk-fill{fill:#e3f2ef} .sk-accent{stroke:#0f766e} text.sk-accent{fill:#0f766e;stroke:none}
+@media (prefers-color-scheme:dark){svg{color:#e4e9ef} .sk-bg{fill:#161d25} .sk-fill{fill:#15302d} .sk-accent{stroke:#4fd1c0} text.sk-accent{fill:#4fd1c0}}
+</style>
+<defs>
+<filter id="rough" x="-3%" y="-3%" width="106%" height="106%"><feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="6" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G"/></filter>
+<marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M1.5 1.5 L8.5 5 L1.5 8.5" fill="none" stroke="currentColor" stroke-width="1.4"/></marker>
+<marker id="arrow-accent" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="sk-accent" d="M1.5 1.5 L8.5 5 L1.5 8.5" fill="none" stroke="currentColor" stroke-width="1.4"/></marker>
+</defs>
+<g filter="url(#rough)">
+  <circle cx="60" cy="15" r="9"/>
+  <path d="M60 24 V50 M45 34 H75 M60 50 L48 68 M60 50 L72 68"/>
+  <path d="M60 96 V540" stroke-dasharray="3 6" stroke-width="1"/>
+  <rect x="124" y="24" width="132" height="34" rx="6"/>
+  <path d="M190 58 V540" stroke-dasharray="3 6" stroke-width="1"/>
+  <rect x="270" y="24" width="120" height="34" rx="6"/>
+  <path d="M330 58 V540" stroke-dasharray="3 6" stroke-width="1"/>
+  <rect x="424" y="24" width="92" height="34" rx="6"/>
+  <path d="M470 58 V540" stroke-dasharray="3 6" stroke-width="1"/>
+  <rect x="548" y="24" width="104" height="34" rx="6"/>
+  <path d="M600 58 V540" stroke-dasharray="3 6" stroke-width="1"/>
+  <rect x="680" y="24" width="100" height="34" rx="6"/>
+  <path d="M730 58 V540" stroke-dasharray="3 6" stroke-width="1"/>
+  <path d="M64 118 L186 118" marker-end="url(#arrow)"/>
+  <path d="M190 144 L216 144 L216 156 L193 156" marker-end="url(#arrow)"/>
+  <path d="M64 184 L186 184" marker-end="url(#arrow)"/>
+  <path d="M190 210 L216 210 L216 222 L193 222" marker-end="url(#arrow)"/>
+  <path d="M194 250 L326 250" marker-end="url(#arrow)"/>
+  <path d="M330 276 L356 276 L356 288 L333 288" marker-end="url(#arrow)"/>
+  <path d="M334 316 L466 316" class="sk-accent" marker-end="url(#arrow-accent)"/>
+  <path d="M466 346 L334 346" class="sk-accent" stroke-dasharray="6 5" marker-end="url(#arrow-accent)"/>
+  <path d="M334 376 L596 376" class="sk-accent" marker-end="url(#arrow-accent)"/>
+  <path d="M596 406 L334 406" class="sk-accent" stroke-dasharray="6 5" marker-end="url(#arrow-accent)"/>
+  <path d="M334 436 L726 436" class="sk-accent" marker-end="url(#arrow-accent)"/>
+  <path d="M726 466 L334 466" class="sk-accent" stroke-dasharray="6 5" marker-end="url(#arrow-accent)"/>
+  <path d="M326 496 L194 496" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+  <path d="M190 522 L216 522 L216 534 L193 534" marker-end="url(#arrow)"/>
+</g>
+<g fill="currentColor" stroke="none">
+  <text x="60" y="86" text-anchor="middle">Caller</text>
+  <text x="190.0" y="46.0" text-anchor="middle">InterpreterClient</text>
+  <text x="330.0" y="46.0" text-anchor="middle">translate route</text>
+  <text x="470.0" y="46.0" text-anchor="middle">Whisper</text>
+  <text x="600.0" y="46.0" text-anchor="middle">GPT-4o-mini</text>
+  <text x="730.0" y="46.0" text-anchor="middle">ElevenLabs</text>
+  <rect class="sk-bg" x="74" y="100" width="102" height="17" rx="3"/>
+  <text x="125.0" y="112" text-anchor="middle" font-size="12">1 hold + speak</text>
+  <text x="224" y="154" text-anchor="start" font-size="12">2 MediaRecorder → Blob</text>
+  <rect class="sk-bg" x="91" y="166" width="68" height="17" rx="3"/>
+  <text x="125.0" y="178" text-anchor="middle" font-size="12">3 release</text>
+  <text x="224" y="220" text-anchor="start" font-size="12">4 size ≥ 500 B?</text>
+  <rect class="sk-bg" x="202" y="232" width="115" height="17" rx="3"/>
+  <text x="260.0" y="244" text-anchor="middle" font-size="12">5 POST multipart</text>
+  <text x="364" y="286" text-anchor="start" font-size="12">6 direction + size ok?</text>
+  <rect class="sk-bg" x="339" y="298" width="122" height="17" rx="3"/>
+  <text x="400.0" y="310" text-anchor="middle" font-size="12" class="sk-accent">7 transcribe (hi)</text>
+  <rect class="sk-bg" x="356" y="328" width="88" height="17" rx="3"/>
+  <text x="400.0" y="340" text-anchor="middle" font-size="12" class="sk-accent">8 transcript</text>
+  <rect class="sk-bg" x="400" y="358" width="129" height="17" rx="3"/>
+  <text x="465.0" y="370" text-anchor="middle" font-size="12" class="sk-accent">9 chat.completions</text>
+  <rect class="sk-bg" x="414" y="388" width="102" height="17" rx="3"/>
+  <text x="465.0" y="400" text-anchor="middle" font-size="12" class="sk-accent">10 translation</text>
+  <rect class="sk-bg" x="412" y="418" width="236" height="17" rx="3"/>
+  <text x="530.0" y="430" text-anchor="middle" font-size="12" class="sk-accent">11 POST /v1/text-to-speech/{voice}</text>
+  <rect class="sk-bg" x="486" y="448" width="88" height="17" rx="3"/>
+  <text x="530.0" y="460" text-anchor="middle" font-size="12" class="sk-accent">12 MP3 bytes</text>
+  <rect class="sk-bg" x="186" y="478" width="149" height="17" rx="3"/>
+  <text x="260.0" y="490" text-anchor="middle" font-size="12">13 JSON + audioBase64</text>
+  <text x="224" y="532" text-anchor="start" font-size="12">14 autoplay on the other side</text>
+</g>
+</svg>
