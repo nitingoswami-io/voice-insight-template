@@ -58,7 +58,7 @@ document: **[docs/interpreter/DESIGN.md](docs/interpreter/DESIGN.md)**.
 
 ## Quick start
 
-Requires Node.js 20.9 or later.
+Requires Node.js 24 (pinned in `package.json` and `.nvmrc`; `nvm use` picks it up).
 
 ```bash
 git clone https://github.com/nitingoswami-io/voice-insight-template.git
